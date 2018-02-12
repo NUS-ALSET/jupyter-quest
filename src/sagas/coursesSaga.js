@@ -1,5 +1,5 @@
 import { put, call } from 'redux-saga/effects';
-import { flickrImages, shutterStockVideos, passwordValidation } from '../api/api';
+import { passwordValidation } from '../api/api';
 import * as types from '../app-constant';
 
 export function* coursesSaga({ payload }) {
