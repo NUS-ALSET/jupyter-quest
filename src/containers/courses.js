@@ -137,7 +137,7 @@ function getModalStyle() {
       this.cancelSubmit()
     }
     render(){
-      const {classes, courses, auth, firebase, publicCourses, joinedCourses, joinCourse }  = this.props;
+      const {classes, courses, auth, firebase, publicCourses, joinedCourses, joinCourse, passwordMatchLoading }  = this.props;
       const { open, message, courseLink, nameRequired, pwdRequired } = this.state;
       let publicCourse;
       if(publicCourses){
@@ -161,6 +161,7 @@ function getModalStyle() {
          password={this.state.password}
          nameRequired={nameRequired}
          pwdRequired={pwdRequired}
+         passwordMatchLoading={passwordMatchLoading}
          />
          }
          {courseLink && 
@@ -192,6 +193,7 @@ const mapDispatchToProps = (dispatch) => {
   }
 }
 const CoursesWithFirebase = compose(
+  connect((state)=>({ passwordMatchLoading :state.courses.passwordMatchLoading }), mapDispatchToProps),
   firebaseConnect( (props, store) => {
     return [
     {
@@ -214,7 +216,7 @@ const CoursesWithFirebase = compose(
     courses: firebase.ordered.myCourses, 
     publicCourses: firebase.ordered.publicCourses,
     joinedCourses: firebase.ordered.joinedCourses
-  }), mapDispatchToProps)
+  }))
 )(Courses)
 
  Courses.propTypes = {

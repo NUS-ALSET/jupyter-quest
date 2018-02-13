@@ -175,8 +175,6 @@ class CourseDetails extends React.Component {
     return (
       <div>
         <AppFrame pageTitle="Assignments" >
-          {auth.emailVerified 
-          ?
             <Paper className={classes.root}>
             {userType === User_Roles_Instructor && 
               <Tabs
@@ -193,9 +191,6 @@ class CourseDetails extends React.Component {
               }              
               {activeTab}
             </Paper> 
-          :
-            '' 
-          } 
 
           { this.state.isAsgmtActive && <CreateAssignment 
           handleClose={this.closeAssignment}

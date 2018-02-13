@@ -3,12 +3,13 @@ import { Course_Join,
     Course_Join_Success
  } from '../app-constant';
 
-const CourseReducer = (state = {
+const initial_state = {
     passwordMatchSuccess:false,
     passwordMatchLoading:false,
-    passwordMatchFail:false
-    
-}, action) => {
+    passwordMatchFail:false   
+}
+
+const CourseReducer = (state = initial_state, action) => {
 
     switch (action.type) {
             case Course_Join :{
