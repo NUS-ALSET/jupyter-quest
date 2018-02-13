@@ -14,8 +14,8 @@ export const firebaseLogger = store => next => action => {
         let object = {
             type:action.type, 
             created:Date.now(),
-            isAnonymous: 'toBeFetched',
-            uid:'toBeFetched',
+            isAnonymous: firebase.auth().currentUser.isAnonymous,
+            uid:firebase.auth().currentUser.uid,
             data:action.payload || null
         }
         database.ref('logged_events').push(object)
