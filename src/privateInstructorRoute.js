@@ -16,7 +16,7 @@ export const PrivateInstructorRouteComponent = ({auth, publicCourses,component: 
                         />
                         }  />
                     : <Redirect to='/login' />
-                : 'Loading'
+                : <Redirect to='/login' />
             }
             
         </div>
