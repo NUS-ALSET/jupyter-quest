@@ -16,7 +16,7 @@ import {
   InstructorView, 
   EditAssignment} from '../assignments/';
   import { User_Roles_Instructor } from '../../app-constant';
-  
+
 const columnData = [
   { id: 'name', numeric: false, disablePadding: true, label: 'Name' },
   { id: 'calories', numeric: true, disablePadding: false, label: 'Description' }
@@ -34,14 +34,12 @@ const columnDataForEditAssignment = [
   { id: 'Order', numeric: true, disablePadding: false, label: 'Order' }
 ];
 
-const columnDataForAssignmentLists = [
-{ id: 'sDetail', numeric: false, disablePadding: true, label: 'Student blah detail' },
-  { id: 'desert', numeric: true, disablePadding: false, label: 'Favorite Dessert blah detail' },
-  { id: 'team1Asignmt', numeric: true, disablePadding: false, label: 'Assignment One blah detail' },
-  { id: 'team1Name', numeric: true, disablePadding: false, label: 'Team Name blah detail' },
-  { id: 'team2Asigmt', numeric: true, disablePadding: false, label: 'Assignment Two blah detail' },
-  { id: 'team2Name', numeric: true, disablePadding: false, label: 'Team Name blah detail' }
-];
+let columnDataForAssignmentLists = [];
+  // { id: 'desert', numeric: true, disablePadding: false, label: 'Student1' },
+  // { id: 'team1Asignmt', numeric: true, disablePadding: false, label: 'Student2' },
+  // { id: 'team1Name', numeric: true, disablePadding: false, label: 'Student3' },
+  // { id: 'team2Asigmt', numeric: true, disablePadding: false, label: 'Student4' }
+
 
 const columnDataForInstructorView = [
   { id: 'sDetail', numeric: false, disablePadding: true, label: 'Student blah detail' },
@@ -136,17 +134,23 @@ class CourseDetails extends React.Component {
   };
 
   render() {
-    const { classes, assignment, auth, match, userType } = this.props;
+    const { classes, assignment, auth, match, userType, student } = this.props;
     // get the array of assignments
     let assignments = assignment ? assignment[match.params.id] : [];
     const { open, message, showTable,nameRequired,descRequired,textRequired,pathRequired  } = this.state;
-
+     if(assignments){
+      columnDataForAssignmentLists=[{ id: 0, numeric: false, disablePadding: true, label: 'Student Name' }]
+      assignments.map((item,index) => { 
+       columnDataForAssignmentLists.push({id: ++index, numeric: false, disablePadding: true, label: item.value.name})
+    })
+   }
+      
     let activeTab = <h2>No Data</h2>;
     switch (this.state.value) {
       case 0 : {
         activeTab = assignments ? <AssignmentList  firebase={this.props.firebase} uid={match.params.id} 
         create={this.createAssignment} columnData={columnDataForAssignmentLists}  
-        data={assignments} showTable={showTable} /> : <h2>No data</h2>;
+        data={assignments} showTable={showTable} studentList = {student} /> : <h2>No data</h2>;
         break;
       }
       case 1 : {
@@ -213,11 +217,16 @@ const AssignmentWithFirebase = compose(
   firebaseConnect( (props, store) => [
       {
         path: `assignment/${props.match.params.id}/`,
+      },
+      {
+        path:`courseMembers/${props.match.params.id}/`,
+        storeAs:'student'
       }
     ]),
   connect(({ firebase }) => ({ 
     auth: firebase.auth, 
-    assignment: firebase.ordered.assignment
+    assignment: firebase.ordered.assignment,
+    student: firebase.ordered.student
   }))
 )(CourseDetails)
 
