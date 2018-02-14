@@ -132,8 +132,7 @@ class PublicCourse extends React.Component {
     let userId = this.props.auth.uid
     let courseKey = this.state.courseId
     let courseName = this.state.courseName
-    
-    this.props.joinCourse(studentPwd,coursePasswordHash)
+    this.props.joinCourse({password: studentPwd,coursePassword:coursePasswordHash})
   }
 
   handleOpen = (pwd, courseKey, courseName) => {

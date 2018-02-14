@@ -15,7 +15,7 @@ const CourseReducer = (state = {
                 return{...state, passwordMatchLoading:true, passwordMatchSuccess: false}
             }
             case Course_Join_Success :{
-                return{...state, passwordMatchLoading:false, passwordMatchSuccess:true}
+                return{...state, passwordMatchLoading:false, passwordMatchSuccess:action.payload.status}
             }
             case Course_Join_Fail :{
                 return{...state, passwordMatchLoading:false, passwordMatchSuccess:false}

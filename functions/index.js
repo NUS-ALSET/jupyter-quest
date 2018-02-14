@@ -12,6 +12,7 @@ admin.initializeApp(functions.config().firebase);
 
 const bcrypt = require('bcrypt');
 const saltRounds = 10;
+const cors = require('cors')({origin: true});
 
 exports.passwordHashing = functions.database.ref('/courses/{courseId}/pass').onCreate(event => {   
   const password = event.data.val().toString();
@@ -21,13 +22,15 @@ exports.passwordHashing = functions.database.ref('/courses/{courseId}/pass').onC
 });
 
 exports.checkPassword = functions.https.onRequest( (req,res) => {
-  if(req.query.password && req.query.coursePassword) {
-    const password = req.query.password;
-    const hash = req.query.coursePassword;
-    res.send(bcrypt.compareSync(password, hash));
-  } else{
-    res.status(403).send('forbidden!')
-  }
+  cors( req, res, ()  => {
+    if(req.body.password && req.body.coursePassword) {
+      const password = req.body.password;
+      const hash = req.body.coursePassword;
+      res.send({status:bcrypt.compareSync(password, hash)});
+    } else{
+      res.status(401).send('forbidden!')
+    }
+  })
 })
 
 exports.downloadEvents = functions.https.onRequest((request, response) => {
