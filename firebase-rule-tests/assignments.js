@@ -39,7 +39,7 @@ describe('Database Rules for Assignments collection', () => {
     targaryen.setFirebaseData(customDatabase);
     targaryen.setFirebaseRules(assignmentsRules);
   });
-  it(`assignment's owner can read & write`, function() {
+  it('assignment\'s owner can read & write', function() {
     const auth = { uid: 'ownerId' };
     expect(auth).canRead('/assignments/course1Id');
     expect(auth).canWrite('/assignments/course1Id');
@@ -51,7 +51,7 @@ describe('Database Rules for Assignments collection', () => {
     expect(auth).cannotWrite('/assignments/course1Id');
   });
 
-  it(`unauthenticated user cannot read  & write`, function() {
+  it('unauthenticated user cannot read  & write', function() {
     const auth = null;
     expect(auth).cannotRead('/assignments/course1Id');
     expect(auth).cannotWrite('/assignments/course1Id');

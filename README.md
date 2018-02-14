@@ -1,5 +1,9 @@
 Jupyter Quest
 
+## Change Firebase functions local to test env
+
+- Change API url of firebase function at src/api/api.js, currently it has the link of Developement DB link.
+
 ## Available Scripts
 
 In the project directory, you can run:
