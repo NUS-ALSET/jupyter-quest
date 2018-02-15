@@ -151,7 +151,6 @@ class AppFrame extends React.Component {
                 id="menuRight"
                 anchorEl={this.state.dropdownAnchorEl}
                 open={this.state.dropdownMenuOpen}
-                onRequestClose={this.handleMenuclose}
               >
                 <AppBarMenuItemsExport onClick={this.handleMenuclose.bind(this)} logout={this.handleLogout.bind(this)}  />
               </Menu>

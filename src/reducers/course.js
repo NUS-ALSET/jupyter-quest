@@ -3,19 +3,20 @@ import { Course_Join,
     Course_Join_Success
  } from '../app-constant';
 
-const CourseReducer = (state = {
-    passwordMatchSuccess:false,
+const initial_state = {
     passwordMatchLoading:false,
-    passwordMatchFail:false
-    
-}, action) => {
+    passwordMatchFail:false,
+    passwordMatchSuccess:null,
+}
+
+const CourseReducer = (state = initial_state, action) => {
 
     switch (action.type) {
             case Course_Join :{
-                return{...state, passwordMatchLoading:true, passwordMatchSuccess: false}
+                return{...state, passwordMatchLoading:true, passwordMatchSuccess: null}
             }
             case Course_Join_Success :{
-                return{...state, passwordMatchLoading:false, passwordMatchSuccess:action.payload.status}
+                return{...state, passwordMatchLoading:false, passwordMatchSuccess:action.payload.status ? 'MATCHED' : "NOT_MATCHED"}
             }
             case Course_Join_Fail :{
                 return{...state, passwordMatchLoading:false, passwordMatchSuccess:false}

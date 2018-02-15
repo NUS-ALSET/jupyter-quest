@@ -7,10 +7,9 @@ import Tabs, { Tab } from 'material-ui/Tabs';
 // components
 import {
   MyCourses,
-  JoinedCourses,
   PublicCourses} from '../components/courses/';
 
-
+import JoinedCourses from "../components/courses/joinedCourses"
 const columnData = [
   { id: 'name', numeric: false, disablePadding: true, label: 'Course name' },
 ];
@@ -64,8 +63,8 @@ class CoursesContainer extends React.Component {
   };
 
   render() {
-    const { classes, courses, publicCourses, firebase, auth, joinedCourses, joinCourse} = this.props;
-
+    const { classes, courses, publicCourses, firebase, auth, joinedCourses, 
+      joinCourse, joinCoursePwdMatch,joinPwdLoading} = this.props;
     let activeTab = <h2>No data</h2>;
     switch (this.state.value) {
       case 0 : {
@@ -73,12 +72,16 @@ class CoursesContainer extends React.Component {
         break;
       }
       case 1 : {
-        activeTab = <JoinedCourses joinedCourses={joinedCourses} />
+        activeTab = ( <ul>
+        {joinedCourses ? joinedCourses.map( (item,index) => <JoinedCourses key={item.key} course={item} />) : ''}
+    </ul>)
+        
         break;
       }
       case 2: {
         activeTab = publicCourses ? <PublicCourses columnData={columnData}
-         firebase={firebase} auth={auth} data={publicCourses} joinedCourses={joinedCourses} joinCourse={joinCourse}/>: <h2>No data</h2>;
+         firebase={firebase} auth={auth} data={publicCourses} joinedCourses={joinedCourses} 
+         joinCourse={joinCourse} joinCoursePwdMatch={joinCoursePwdMatch} joinPwdLoading={joinPwdLoading}/>: <h2>No data</h2>;
         break;
       }
       default : {

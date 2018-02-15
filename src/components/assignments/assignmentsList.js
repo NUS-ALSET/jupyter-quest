@@ -15,13 +15,13 @@ import Switch from 'material-ui/Switch';
 import SwapVertIcon from 'material-ui-icons/SwapVert';
 
 
-
 // components
 
 import EnhancedTableHead from '../table/enhancedTableHead';
 import EnhancedTableToolbar from '../table/enhancedTableToolbar';
 import Button from 'material-ui/Button/Button';
 import Notification from '../notification'
+import StudentRow from "./studentRow"
 
 
 const styles = theme => ({
@@ -36,7 +36,7 @@ const styles = theme => ({
     overflowX: 'auto',
   },
   paddingLt:{
-    paddingLeft:'47px'
+    paddingLeft:'25px'
   },
   paddingLs:{
     paddingLeft:'70px'
@@ -77,7 +77,7 @@ class AssignmentLists extends React.Component {
 
   handleSelectAllClick = (event, checked) => {
     if (checked) {
-      this.setState({ selected: this.props.data.map(n => n.key) });
+      this.setState({ selected: this.props.studentList.map(n => n.key) });
       return;
     }
     this.setState({ selected: [] });
@@ -139,16 +139,16 @@ class AssignmentLists extends React.Component {
   isSelected = id => this.state.selected.indexOf(id) !== -1;
 
   render() {
-    const { classes, data, columnData, create, showTable } = this.props;
+    const { classes, data, columnData, create, showTable, studentList, auth } = this.props;
     const { order, orderBy, selected, rowsPerPage, page, open, message } = this.state;
-    const emptyRows = data ? rowsPerPage - Math.min(rowsPerPage, data.length - page * rowsPerPage):'';
+    const emptyRows = studentList ? rowsPerPage - Math.min(rowsPerPage, studentList.length - page * rowsPerPage):'';
 
     return (
         <div>
       <Notification message={message} open={open} handleClose={this.closeNotification}/>
       {showTable && <Paper className={classes.root}>
             <EnhancedTableToolbar title='Assignments'  numSelected={selected.length} deleteOpr={this.deleteData} />
-            {data ? <div className={classes.tableWrapper}>
+            {studentList ? <div className={classes.tableWrapper}>
             <Table className={classes.table}>
                 <EnhancedTableHead
                 columnData={columnData}
@@ -157,46 +157,15 @@ class AssignmentLists extends React.Component {
                 orderBy={orderBy}
                 onSelectAllClick={this.handleSelectAllClick}
                 onRequestSort={this.handleRequestSort}
-                rowCount={data.length}
+                rowCount={studentList.length}
                 />
                 <TableBody>
-                <TableRow >
-                    <TableCell padding="none"></TableCell>
-                    <TableCell className={classes.paddingLs}></TableCell>
-                    <TableCell className={classes.paddingLs}>
-                    <Button raised color="default" >Edit</Button>
-                    </TableCell>
-                    <TableCell className={classes.paddingLs}>
-                    <Button raised color="default" >Submit</Button>
-                    </TableCell>
-                    <TableCell className={classes.paddingLs}>
-                    <Button raised color="default" >Submit</Button>
-                    </TableCell>
-                    </TableRow>
-
-                {data.slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage).map((n,id) => {
-                const isSelected = this.isSelected(n.key);
+                  
+                {studentList.slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage).map((student,id) => {
+                const isSelected = this.isSelected(student.key);
+                const isMe=student.key===auth.uid ? true:false;
                 return (
-                    <TableRow
-                    hover
-                    onClick={event => this.handleClick(event, n.key)}
-                    role="checkbox"
-                    aria-checked={isSelected}
-                    tabIndex={-1}
-                    key={n.key}
-                    selected={isSelected}
-                    >
-                    <TableCell padding="checkbox">
-                        <Checkbox checked={isSelected} />
-                    </TableCell>
-                    <TableCell padding="none">{n.value.name}</TableCell>
-                    <TableCell className={classes.paddingLs}>Complete</TableCell>
-                    <TableCell className={classes.paddingLs}>Team1</TableCell>
-                    <TableCell className={classes.paddingLs}>Team2</TableCell>
-                    <TableCell className={classes.paddingLs}>Complete</TableCell>
-                    <TableCell className={classes.paddingLs}>Team3</TableCell>
-                   
-                    </TableRow>
+                <StudentRow key={student.key} isMe={isMe}  handleNotification={this.handleNotification} userId={student.key}/>                
                 );
                 })}
                 {emptyRows > 0 && (
@@ -209,7 +178,7 @@ class AssignmentLists extends React.Component {
                 <TableRow>
                 <TablePagination
                     colSpan={6}
-                    count={data.length}
+                    count={studentList.length}
                     rowsPerPage={rowsPerPage}
                     page={page}
                     backIconButtonProps={{
@@ -224,7 +193,7 @@ class AssignmentLists extends React.Component {
                 </TableRow>
             </TableFooter>
             </Table>
-            </div> :''}
+            </div> :<h3> No Students</h3>}
                 </Paper> }
        
       </div>
