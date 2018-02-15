@@ -76,7 +76,9 @@ function getModalStyle() {
         value: 0,
         courseLink:null,
         nameRequired:false,
-        pwdRequired:false
+        pwdRequired:false,
+        joinCoursePwdMatch:'',
+        joinPwdLoading:''
       }
         this.handleInput=this.handleInput.bind(this)
     }
@@ -132,12 +134,9 @@ function getModalStyle() {
         }) ;
       }
     }
-    componentWillReceiveProps(props){
-      if(!props.auth.emailVerified)
-      this.cancelSubmit()
-    }
     render(){
-      const {classes, courses, auth, firebase, publicCourses, joinedCourses, joinCourse, passwordMatchLoading }  = this.props;
+      const {classes, courses, auth, firebase, publicCourses, joinedCourses, joinCourse, 
+        passwordMatchLoading, joinCoursePwdMatch, joinPwdLoading }  = this.props;
       const { open, message, courseLink, nameRequired, pwdRequired } = this.state;
       let publicCourse;
       if(publicCourses){
@@ -148,8 +147,8 @@ function getModalStyle() {
        <Notification message={message} open={open} handleClose={this.closeNotification}/>
       <AppFrame pageTitle="Courses" >
        <Button raised onClick={this.createCourse}>Create a Course</Button>
-       <CourseTable firebase={firebase} courses={courses} auth={auth}
-        publicCourses={publicCourse} joinedCourses={joinedCourses} joinCourse={joinCourse}/> 
+       <CourseTable firebase={firebase} courses={courses} auth={auth} joinCoursePwdMatch={joinCoursePwdMatch}
+        publicCourses={publicCourse} joinedCourses={joinedCourses} joinCourse={joinCourse} joinPwdLoading={joinPwdLoading}/> 
        <div>
          {!courseLink && 
          <CreateCourse 
@@ -187,26 +186,31 @@ function getModalStyle() {
 
 const mapDispatchToProps = (dispatch) => {
   return {
-    joinCourse: (payload) => {
+      joinCourse: (payload) => {
       dispatch(courseAction.joinCourse(payload))
     }
   }
 }
 const CoursesWithFirebase = compose(
-  connect((state)=>({ passwordMatchLoading :state.courses.passwordMatchLoading }), mapDispatchToProps),
+  connect((state)=>({
+     joinCoursePwdMatch :state.courses.passwordMatchSuccess, 
+     joinPwdLoading :state.courses.passwordMatchLoading,
+   //  allJoinesPwd: state.courses
+  }), mapDispatchToProps),
   firebaseConnect( (props, store) => {
+  const uid=store.getState().firebase.auth.uid;
     return [
     {
-      path:`courses`, 
+      path:`courses`,   
       storeAs:'myCourses', 
-      queryParams:  [ 'orderByChild=uid', `equalTo=${store.getState().firebase.auth.uid}` ]
+      queryParams:  [ 'orderByChild=uid', `equalTo=${uid}` ]
     },
     {
       path:'courses',
       storeAs: 'publicCourses'
     },
     {
-      path:`myCourses/${store.getState().firebase.auth.uid}`,
+      path:`memberCourses/${uid}`,
       storeAs:'joinedCourses'
     }
   ]

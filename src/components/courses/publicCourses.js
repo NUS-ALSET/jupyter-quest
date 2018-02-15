@@ -31,6 +31,10 @@ const styles = theme => ({
   tableWrapper: {
     overflowX: 'auto',
   },
+  paddingLt:{
+    paddingLeft:'13px'
+  },
+ 
 });
 
 class PublicCourse extends React.Component {
@@ -51,7 +55,9 @@ class PublicCourse extends React.Component {
       message:null,
       coursePwd:null,
       courseId:null,
-      courseName:''
+      courseName:'',
+      isTrue:true,
+      isPasswordFormSubmitted : false,
     };
   }
 
@@ -125,14 +131,27 @@ class PublicCourse extends React.Component {
   handleChangeRowsPerPage = event => {
     this.setState({ rowsPerPage: event.target.value });
   };
-
+ 
   submitJoin=(e)=>{
     let coursePasswordHash = this.state.coursePwd
     let studentPwd = e.password
-    let userId = this.props.auth.uid
-    let courseKey = this.state.courseId
-    let courseName = this.state.courseName
-    this.props.joinCourse({password: studentPwd,coursePassword:coursePasswordHash})
+    this.setState({isPasswordFormSubmitted:true});
+    this.props.joinCourse({password: studentPwd,coursePassword:coursePasswordHash});
+  }
+  handlePasswordCheck(joinCoursePwdMatch,joinPwdLoading){
+    // loader false
+    this.setState({isPasswordFormSubmitted:false});
+    let joinCourses = {joined:true, title:this.state.courseName}
+    if(joinCoursePwdMatch=="MATCHED"){
+      this.handleClose();
+      this.props.firebase.set(`memberCourses/${this.props.auth.uid}/${this.state.courseId}`,true)
+      .then(data=>{
+        this.setState({isTrue:false})
+      this.openNotification("Course Joined Successfully")
+      })
+    }else{
+      this.openNotification("Password not match")
+    }
   }
 
   handleOpen = (pwd, courseKey, courseName) => {
@@ -147,12 +166,18 @@ class PublicCourse extends React.Component {
     this.setState({[e.target.name]:e.target.value })
   }
 
+  componentWillReceiveProps(nextProps){
+    const { joinCoursePwdMatch, joinPwdLoading} = nextProps;
+    if(this.state.isPasswordFormSubmitted && joinCoursePwdMatch!=null){
+      this.handlePasswordCheck(joinCoursePwdMatch,joinPwdLoading);
+    }
+  }
 
   isSelected = id => this.state.selected.indexOf(id) !== -1;
 
   render() {
-    const { classes, data, columnData, joinedCourses} = this.props;
-    const { order, orderBy, selected, rowsPerPage, page, password, vertical,openNotification, horizontal, message } = this.state;
+    const { classes, data, columnData, joinCoursePwdMatch, joinPwdLoading,auth, joinedCourses} = this.props;
+    const { order, orderBy, selected, rowsPerPage, page, password, vertical,openNotification, horizontal, message, isTrue,isPasswordFormSubmitted } = this.state;
     const emptyRows = data ? rowsPerPage - Math.min(rowsPerPage, data.length - page * rowsPerPage) :'';
     return (
         <div>
@@ -172,7 +197,7 @@ class PublicCourse extends React.Component {
             />
             <TableBody>
             {data.slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage).map((course,id) => {
-                return (
+               return (
                     <TableRow
                       key={id}
                     >
@@ -180,8 +205,11 @@ class PublicCourse extends React.Component {
                       </TableCell>
                       <TableCell padding="none"><Link to={`/courses/${course.key}`}>{course.value.title}</Link></TableCell>
                       <TableCell> 
-                     <Button className="cancelBtn" 
-                        raised color="primary" onClick={()=>this.handleOpen(course.value.pass, course.key, course.value.title)}>Join Course</Button>
+                    {joinedCourses && joinedCourses.filter((jc) =>jc.key === course.key).length>0 ? 
+                    <h3 className={classes.paddingLt}>Already joined</h3> :
+                    <Button className="cancelBtn" 
+                      raised color="primary" onClick={()=>this.handleOpen(course.value.pass, course.key, course.value.title)}>Join Course</Button>
+                    }
                       </TableCell>
                     </TableRow>
                 );
