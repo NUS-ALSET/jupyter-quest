@@ -149,7 +149,7 @@ class CourseDetails extends React.Component {
     switch (this.state.value) {
       case 0 : {
         activeTab = assignments ? <AssignmentList  firebase={this.props.firebase} uid={match.params.id} 
-        create={this.createAssignment} columnData={columnDataForAssignmentLists}  
+        create={this.createAssignment} columnData={columnDataForAssignmentLists} auth = {auth} 
         data={assignments} showTable={showTable} studentList = {student} /> : <h2>No data</h2>;
         break;
       }
@@ -175,8 +175,6 @@ class CourseDetails extends React.Component {
     return (
       <div>
         <AppFrame pageTitle="Assignments" >
-          {auth.emailVerified 
-          ?
             <Paper className={classes.root}>
             {userType === User_Roles_Instructor && 
               <Tabs
@@ -193,9 +191,6 @@ class CourseDetails extends React.Component {
               }              
               {activeTab}
             </Paper> 
-          :
-            '' 
-          } 
 
           { this.state.isAsgmtActive && <CreateAssignment 
           handleClose={this.closeAssignment}

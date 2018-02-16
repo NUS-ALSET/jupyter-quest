@@ -1,5 +1,5 @@
 import React from 'react'
-import {Route} from 'react-router-dom'
+import {Route, Redirect} from 'react-router-dom'
 import {connect} from 'react-redux'
 import { firebaseConnect, isLoaded, isEmpty } from 'react-redux-firebase'
 import {compose} from 'redux'
@@ -15,8 +15,8 @@ export const PrivateInstructorRouteComponent = ({auth, publicCourses,component: 
                             {...props}  
                         />
                         }  />
-                    : null
-                : 'Loading'
+                    : <Redirect to='/login' />
+                : <Redirect to='/login' />
             }
             
         </div>

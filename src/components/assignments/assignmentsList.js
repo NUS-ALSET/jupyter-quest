@@ -15,13 +15,13 @@ import Switch from 'material-ui/Switch';
 import SwapVertIcon from 'material-ui-icons/SwapVert';
 
 
-
 // components
 
 import EnhancedTableHead from '../table/enhancedTableHead';
 import EnhancedTableToolbar from '../table/enhancedTableToolbar';
 import Button from 'material-ui/Button/Button';
 import Notification from '../notification'
+import StudentRow from "./studentRow"
 
 
 const styles = theme => ({
@@ -139,7 +139,7 @@ class AssignmentLists extends React.Component {
   isSelected = id => this.state.selected.indexOf(id) !== -1;
 
   render() {
-    const { classes, data, columnData, create, showTable, studentList } = this.props;
+    const { classes, data, columnData, create, showTable, studentList, auth } = this.props;
     const { order, orderBy, selected, rowsPerPage, page, open, message } = this.state;
     const emptyRows = studentList ? rowsPerPage - Math.min(rowsPerPage, studentList.length - page * rowsPerPage):'';
 
@@ -160,33 +160,12 @@ class AssignmentLists extends React.Component {
                 rowCount={studentList.length}
                 />
                 <TableBody>
-                {studentList.slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage).map((n,id) => {
-                const isSelected = this.isSelected(n.key);
+                  
+                {studentList.slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage).map((student,id) => {
+                const isSelected = this.isSelected(student.key);
+                const isMe=student.key===auth.uid ? true:false;
                 return (
-                    <TableRow
-                    hover
-                    onClick={event => this.handleClick(event, n.key)}
-                    role="checkbox"
-                    aria-checked={isSelected}
-                    tabIndex={-1}
-                    key={n.key}
-                    selected={isSelected}
-                    >
-                    <TableCell padding="checkbox">
-                        <Checkbox checked={isSelected} />
-                    </TableCell>
-                    <TableCell padding="none">{n.value.name}</TableCell>
-                    <TableCell padding="none">
-                    <Button raised color="default" >Submit</Button>
-                    </TableCell >
-                    <TableCell padding="none">
-                    <Button raised color="default" >Submit</Button>
-                    </TableCell>
-                    <TableCell padding="none">
-                    <Button raised color="default" >Submit</Button>
-                    </TableCell>
-                   
-                    </TableRow> 
+                <StudentRow key={student.key} isMe={isMe}  handleNotification={this.handleNotification} userId={student.key}/>                
                 );
                 })}
                 {emptyRows > 0 && (

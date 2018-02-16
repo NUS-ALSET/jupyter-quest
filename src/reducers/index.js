@@ -5,5 +5,5 @@ import { firebaseReducer } from 'react-redux-firebase';
 import CourseReducer from './course';
 export default  combineReducers({
   firebase: firebaseReducer,
-  CourseReducer
+  courses: CourseReducer
 });
