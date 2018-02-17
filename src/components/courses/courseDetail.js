@@ -82,7 +82,8 @@ class CourseDetails extends React.Component {
       descRequired: false,
       textRequired: false,
       pathRequired: false,
-      value: 0
+      value: 0,
+      isInstructor : false
     };
   }
 
@@ -96,13 +97,12 @@ class CourseDetails extends React.Component {
     this.setState({ open: false });
   };
   submitAssignment=(formData)=>{
-   let allAssignment={
+   let newAssignment={
       name:formData.name,
       desc:formData.desc,
       text:formData.text,
       path:formData.path
     }
-
     if(formData.name === '' && formData.desc!=='' )
     this.setState({nameRequired:true, descRequired:false})
     if(formData.name !== '' && formData.desc==='' )
@@ -111,14 +111,17 @@ class CourseDetails extends React.Component {
     this.setState({nameRequired:true, descRequired:true})
     if(formData.name !== '' && formData.desc !==''){
     this.setState({pwdRequired:false, nameRequired:false})
-
-    this.props.firebase.push(`assignment/${this.props.match.params.id}`, allAssignment).then( data => {
-      // wait for db to send response\
-
+    const ref=`assignments/${this.props.match.params.id}`;
+    this.props.firebase.push(ref, newAssignment)
+    .then( data => {
+      // wait for db to send response
       this.handleNotification('Assignment Added Successfully');
       this.closeAssignment();
       this.setState({showTable:true})
-    }) ;
+    })
+    .catch(e=>{
+      console.log(e);
+    })
   }
   }
 
@@ -132,12 +135,24 @@ class CourseDetails extends React.Component {
     this.closeAssignment()
     }
   };
-
+componentWillMount(){
+  this.props.firebase.database().ref(`/courses/${this.props.match.params.id}`).once('value')
+  .then((snapshot)=> {
+    console.log(snapshot.val());
+    const course=snapshot.val();
+    if(course && course.owner===this.props.auth.uid){
+      this.setState({ isInstructor :true})
+    }
+  })
+  .catch(e=>{
+    console.log(e);
+  })
+}
   render() {
     const { classes, assignment, auth, match, userType, student } = this.props;
     // get the array of assignments
     let assignments = assignment ? assignment[match.params.id] : [];
-    const { open, message, showTable,nameRequired,descRequired,textRequired,pathRequired  } = this.state;
+    const { open, message, showTable,nameRequired,descRequired,textRequired,pathRequired,isInstructor  } = this.state;
      if(assignments){
       columnDataForAssignmentLists=[{ id: 0, numeric: false, disablePadding: true, label: 'Student Name' }]
       assignments.map((item,index) => { 
@@ -176,7 +191,7 @@ class CourseDetails extends React.Component {
       <div>
         <AppFrame pageTitle="Assignments" >
             <Paper className={classes.root}>
-            {userType === User_Roles_Instructor && 
+            {isInstructor && 
               <Tabs
                 value={this.state.value}
                 onChange={this.handleChange}
@@ -211,7 +226,7 @@ class CourseDetails extends React.Component {
 const AssignmentWithFirebase = compose(
   firebaseConnect( (props, store) => [
       {
-        path: `assignment/${props.match.params.id}/`,
+        path: `assignments/${props.match.params.id}/`,
       },
       {
         path:`courseMembers/${props.match.params.id}/`,
@@ -220,7 +235,7 @@ const AssignmentWithFirebase = compose(
     ]),
   connect(({ firebase }) => ({ 
     auth: firebase.auth, 
-    assignment: firebase.ordered.assignment,
+    assignment: firebase.ordered.assignments,
     student: firebase.ordered.student
   }))
 )(CourseDetails)

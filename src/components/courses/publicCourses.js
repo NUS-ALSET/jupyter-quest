@@ -10,15 +10,15 @@ import Table, {
 } from 'material-ui/Table';
 import Paper from 'material-ui/Paper';
 import { Link } from 'react-router-dom';
-import JoinModel from './joinModel'
-import Snackbar from 'material-ui/Snackbar';
+import Button from 'material-ui/Button/Button';
+
 
 // components
 
 import EnhancedTableHead from '../table/enhancedTableHead';
 import EnhancedTableToolbar from '../table/enhancedTableToolbar';
-import Button from 'material-ui/Button/Button';
-
+import JoinModel from './joinModel'
+import Notification from '../notification'
 
 const styles = theme => ({
   root: {
@@ -47,8 +47,8 @@ class PublicCourse extends React.Component {
       selected: [],
       page: 0,
       rowsPerPage: 5,
-      openModel: false, 
-      openNotification:false, 
+      openModel: false,
+      openNotification:false,
       password:'',
       vertical: 'top',
       horizontal: 'right',
@@ -92,10 +92,10 @@ class PublicCourse extends React.Component {
   };
 
   handleClick = (event, id) => {
-      let b = event.target.parentNode.className;
-      if(b.includes('cancelBtn')){
-          return;
-      }
+    let b = event.target.parentNode.className;
+    if(b.includes('cancelBtn')){
+      return;
+  }
     const { selected } = this.state;
     const selectedIndex = selected.indexOf(id);
     let newSelected = [];
@@ -131,27 +131,12 @@ class PublicCourse extends React.Component {
   handleChangeRowsPerPage = event => {
     this.setState({ rowsPerPage: event.target.value });
   };
- 
+
   submitJoin=(e)=>{
-    let coursePasswordHash = this.state.coursePwd
-    let studentPwd = e.password
+    let courseKey = this.state.courseId;
+    let studentPwd = e.password;
     this.setState({isPasswordFormSubmitted:true});
-    this.props.joinCourse({password: studentPwd,coursePassword:coursePasswordHash});
-  }
-  handlePasswordCheck(joinCoursePwdMatch,joinPwdLoading){
-    // loader false
-    this.setState({isPasswordFormSubmitted:false});
-    let joinCourses = {joined:true, title:this.state.courseName}
-    if(joinCoursePwdMatch=="MATCHED"){
-      this.handleClose();
-      this.props.firebase.set(`memberCourses/${this.props.auth.uid}/${this.state.courseId}`,true)
-      .then(data=>{
-        this.setState({isTrue:false})
-      this.openNotification("Course Joined Successfully")
-      })
-    }else{
-      this.openNotification("Password not match")
-    }
+    this.props.joinCourse({ password: studentPwd, courseKey: courseKey });
   }
 
   handleOpen = (pwd, courseKey, courseName) => {
@@ -167,20 +152,27 @@ class PublicCourse extends React.Component {
   }
 
   componentWillReceiveProps(nextProps){
-    const { joinCoursePwdMatch, joinPwdLoading} = nextProps;
-    if(this.state.isPasswordFormSubmitted && joinCoursePwdMatch!=null){
-      this.handlePasswordCheck(joinCoursePwdMatch,joinPwdLoading);
+    const { coursePwdMatched } = nextProps;
+    if (this.state.isPasswordFormSubmitted && coursePwdMatched !== null) {  
+      if (coursePwdMatched === 'MATCHED') {
+        this.handleClose();
+        this.openNotification('Course Joined Successfully');
+      } else {
+        this.openNotification('Wrong Password');
+      }
+      this.setState({ isPasswordFormSubmitted: false });
     }
   }
 
   isSelected = id => this.state.selected.indexOf(id) !== -1;
 
   render() {
-    const { classes, data, columnData, joinCoursePwdMatch, joinPwdLoading,auth, joinedCourses} = this.props;
-    const { order, orderBy, selected, rowsPerPage, page, password, vertical,openNotification, horizontal, message, isTrue,isPasswordFormSubmitted } = this.state;
+    const { classes, data, columnData, joinPwdLoading,auth, joinedCourses} = this.props;
+    const { order, orderBy, selected, rowsPerPage, page, password, vertical,openNotification, horizontal, message, isTrue } = this.state;
     const emptyRows = data ? rowsPerPage - Math.min(rowsPerPage, data.length - page * rowsPerPage) :'';
     return (
-        <div>
+      <div>
+         <Notification message={message} open={openNotification} handleClose={this.closeNotification} />
         <Paper className={classes.root}>
         <EnhancedTableToolbar title='Public Courses'  numSelected={selected.length} />
         <div className={classes.tableWrapper}>
@@ -247,17 +239,7 @@ class PublicCourse extends React.Component {
             password={password}
             handlePassword={this.handleInput}
             />
-
-             <Snackbar
-        anchorOrigin={{ vertical, horizontal }}
-        open={openNotification}
-        onClose={this.closeNotification}
-        SnackbarContentProps={{
-          'aria-describedby': 'message-id',
-        }}
-        message={<span id="message-id">{message}</span>}
-        />
-      </div>      
+      </div> 
     );
   }
 }
