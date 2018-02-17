@@ -131,7 +131,7 @@ class PublicCourse extends React.Component {
   handleChangeRowsPerPage = event => {
     this.setState({ rowsPerPage: event.target.value });
   };
-
+ 
   submitJoin=(e)=>{
     let courseKey = this.state.courseId;
     let studentPwd = e.password;

@@ -138,7 +138,6 @@ class CourseDetails extends React.Component {
 componentWillMount(){
   this.props.firebase.database().ref(`/courses/${this.props.match.params.id}`).once('value')
   .then((snapshot)=> {
-    console.log(snapshot.val());
     const course=snapshot.val();
     if(course && course.owner===this.props.auth.uid){
       this.setState({ isInstructor :true})
