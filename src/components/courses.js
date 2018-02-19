@@ -12,6 +12,7 @@ import {
 import JoinedCourses from "../components/courses/joinedCourses"
 const columnData = [
   { id: 'name', numeric: false, disablePadding: true, label: 'Course name' },
+  { id: 'empty', numeric: false, disablePadding: true, label: '' }
 ];
 
 
@@ -64,7 +65,7 @@ class CoursesContainer extends React.Component {
 
   render() {
     const { classes, courses, publicCourses, firebase, auth, joinedCourses, 
-      joinCourse, joinCoursePwdMatch,joinPwdLoading} = this.props;
+      joinCourse, coursePwdMatched} = this.props;
     let activeTab = <h2>No data</h2>;
     switch (this.state.value) {
       case 0 : {
@@ -81,7 +82,7 @@ class CoursesContainer extends React.Component {
       case 2: {
         activeTab = publicCourses ? <PublicCourses columnData={columnData}
          firebase={firebase} auth={auth} data={publicCourses} joinedCourses={joinedCourses} 
-         joinCourse={joinCourse} joinCoursePwdMatch={joinCoursePwdMatch} joinPwdLoading={joinPwdLoading}/>: <h2>No data</h2>;
+         joinCourse={joinCourse}  coursePwdMatched={coursePwdMatched}/>: <h2>No data</h2>;
         break;
       }
       default : {

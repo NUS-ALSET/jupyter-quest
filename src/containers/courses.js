@@ -77,7 +77,7 @@ function getModalStyle() {
         courseLink:null,
         nameRequired:false,
         pwdRequired:false,
-        joinCoursePwdMatch:'',
+        coursePwdMatched: null,
         joinPwdLoading:''
       }
         this.handleInput=this.handleInput.bind(this)
@@ -112,45 +112,62 @@ function getModalStyle() {
         courseModelActive:false,
         courseLink:null})
     }
-    submitCourse=(formData)=>{
-      let allCourses={
-        title:formData.name,
-        pass:formData.password,
-        uid:this.props.auth.uid
-      }    
-      if(formData.name === '' && formData.password!=='')
+    joinCourse = ({ password, courseKey }) => {
+      this.setState({ coursePwdMatched: null });
+      this.props.firebase
+        .set(`studentCoursePasswords/${courseKey}/${this.props.auth.uid}`, password)
+        .then(d => {
+         
+          this.setState({ coursePwdMatched: 'MATCHED' });
+          this.props.firebase.set(`memberCourses/${this.props.auth.uid}/${courseKey}`, true);
+          this.props.firebase.set(`courseMembers/${courseKey}/${this.props.auth.uid}`, true);
+        })
+        .catch(e => {
+          if (e.code === 'PERMISSION_DENIED') {
+            this.setState({ coursePwdMatched: 'NOT_MATCHED' });
+      }
+        });
+    }
+  submitCourse = formData => {
+    const passsword = formData.password;
+    const course = {
+      title: formData.name,
+      owner: this.props.auth.uid,
+    };
+    if(formData.name === '' && formData.password!=='')
         this.setState({nameRequired:true, pwdRequired:false})
         if(formData.name !== '' && formData.password ==='')
         this.setState({pwdRequired:true, nameRequired:false})
         if(formData.name === '' && formData.password ==='')
         this.setState({pwdRequired:true, nameRequired:true})
-        if(formData.name !== '' && formData.password !==''){
+        if(formData.name !== '' && formData.password !=='')
         this.setState({pwdRequired:false, nameRequired:false})
-      //  push data to firebase
-        this.props.firebase.push('courses', allCourses).then( data => {
+       //  push data to firebase
+       this.props.firebase.push('courses', course).then(data => {
           // wait for db to send response\
-          this.setState( { courseLink:`${BASE_URL}courses/${data.key}` } )
+        this.setState({ courseLink: `${BASE_URL}courses/${data.key}` });
+        this.props.firebase.set(`coursePasswords/${data.key}`, passsword);
           this.handleNotification(`Course Added Successfuly!`);
-        }) ;
-      }
+      });
+  }
+  render(){
+    const {classes, courses, auth, firebase, publicCourses, joinedCourses, joinCourse, 
+      passwordMatchLoading, joinPwdLoading }  = this.props;
+    const { open, message, courseLink, nameRequired, pwdRequired ,coursePwdMatched} = this.state;
+    let publicCourse;
+    if(publicCourses){
+      publicCourse = publicCourses.filter( course => course.value.owner === auth.uid ? false : true );
     }
-    render(){
-      const {classes, courses, auth, firebase, publicCourses, joinedCourses, joinCourse, 
-        passwordMatchLoading, joinCoursePwdMatch, joinPwdLoading }  = this.props;
-      const { open, message, courseLink, nameRequired, pwdRequired } = this.state;
-      let publicCourse;
-      if(publicCourses){
-        publicCourse = publicCourses.filter( course => course.value.uid !== auth.uid ? course : null );
-      }
-    return(
+  return(
     <div>
-       <Notification message={message} open={open} handleClose={this.closeNotification}/>
-      <AppFrame pageTitle="Courses" >
-       <Button raised onClick={this.createCourse}>Create a Course</Button>
-       <CourseTable firebase={firebase} courses={courses} auth={auth} joinCoursePwdMatch={joinCoursePwdMatch}
-        publicCourses={publicCourse} joinedCourses={joinedCourses} joinCourse={joinCourse} joinPwdLoading={joinPwdLoading}/> 
-       <div>
-         {!courseLink && 
+        <Notification message={message} open={open} handleClose={this.closeNotification}/>
+        <AppFrame pageTitle="Courses" >
+         <Button raised onClick={this.createCourse}>Create a Course</Button>
+         <CourseTable firebase={firebase} courses={courses} auth={auth} 
+          publicCourses={publicCourse} joinedCourses={joinedCourses} joinCourse={this.joinCourse}
+          coursePwdMatched={coursePwdMatched}/> 
+         <div>
+            {!courseLink && 
          <CreateCourse 
          openModel={this.state.courseModelActive} 
          handleSubmit={this.submitCourse} 
@@ -160,9 +177,8 @@ function getModalStyle() {
          password={this.state.password}
          nameRequired={nameRequired}
          pwdRequired={pwdRequired}
-         passwordMatchLoading={passwordMatchLoading}
-         />
-         }
+         />        
+          }
          {courseLink && 
           <Modal 
             aria-labelledby="simple-modal-title"
@@ -184,7 +200,8 @@ function getModalStyle() {
 }
 }
 
-const mapDispatchToProps = (dispatch) => {
+
+ const mapDispatchToProps = (dispatch) => {
   return {
       joinCourse: (payload) => {
       dispatch(courseAction.joinCourse(payload))
@@ -193,8 +210,7 @@ const mapDispatchToProps = (dispatch) => {
 }
 const CoursesWithFirebase = compose(
   connect((state)=>({
-     joinCoursePwdMatch :state.courses.passwordMatchSuccess, 
-     joinPwdLoading :state.courses.passwordMatchLoading,
+    joinPwdLoading :state.courses.passwordMatchLoading,
    //  allJoinesPwd: state.courses
   }), mapDispatchToProps),
   firebaseConnect( (props, store) => {
@@ -203,7 +219,7 @@ const CoursesWithFirebase = compose(
     {
       path:`courses`,   
       storeAs:'myCourses', 
-      queryParams:  [ 'orderByChild=uid', `equalTo=${uid}` ]
+      queryParams:  [ 'orderByChild=owner', `equalTo=${uid}` ]
     },
     {
       path:'courses',

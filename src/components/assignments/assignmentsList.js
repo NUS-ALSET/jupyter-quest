@@ -139,16 +139,17 @@ class AssignmentLists extends React.Component {
   isSelected = id => this.state.selected.indexOf(id) !== -1;
 
   render() {
-    const { classes, data, columnData, create, showTable, studentList, auth } = this.props;
+    const { classes, data, columnData, create, showTable, auth } = this.props;
+    let {studentList}=this.props;
     const { order, orderBy, selected, rowsPerPage, page, open, message } = this.state;
     const emptyRows = studentList ? rowsPerPage - Math.min(rowsPerPage, studentList.length - page * rowsPerPage):'';
-
+    studentList = studentList ?studentList : []; 
     return (
         <div>
       <Notification message={message} open={open} handleClose={this.closeNotification}/>
       {showTable && <Paper className={classes.root}>
             <EnhancedTableToolbar title='Assignments'  numSelected={selected.length} deleteOpr={this.deleteData} />
-            {studentList ? <div className={classes.tableWrapper}>
+            { <div className={classes.tableWrapper}>
             <Table className={classes.table}>
                 <EnhancedTableHead
                 columnData={columnData}
@@ -165,7 +166,7 @@ class AssignmentLists extends React.Component {
                 const isSelected = this.isSelected(student.key);
                 const isMe=student.key===auth.uid ? true:false;
                 return (
-                <StudentRow key={student.key} isMe={isMe}  handleNotification={this.handleNotification} userId={student.key}/>                
+                <StudentRow key={student.key} isMe={isMe} assignMentList={columnData} handleNotification={this.handleNotification} userId={student.key}/>                
                 );
                 })}
                 {emptyRows > 0 && (
@@ -193,7 +194,7 @@ class AssignmentLists extends React.Component {
                 </TableRow>
             </TableFooter>
             </Table>
-            </div> :<h3> No Students</h3>}
+            </div>}
                 </Paper> }
        
       </div>

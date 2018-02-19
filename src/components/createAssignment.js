@@ -154,17 +154,7 @@ class CreateAssignment extends Component {
         { pathRequired && <FormHelperText className="error-text">Path Required</FormHelperText>}
            </FormControl> }
             <div>
-            <input
-              accept=".json"
-              className={classes.input}
-              id="raised-button-file"
-              type="file"
-              onChange={this.fileHandle}
-            />
-             <br />
-            <label style={{marginRight:'10px'}} htmlFor="raised-button-file">
-              <Button raised component="span" color="default" className={classes.button}> Upload File </Button>
-            </label>
+            <br/>
               <Button raised color="primary" type="submit" onClick={() =>{handleSubmit({ name, desc, path, text })}} >Submit</Button>
               <Button className="cancelBtn" 
               raised color="default" onClick={()=>handleClose()}>Cancel</Button>
