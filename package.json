@@ -3,6 +3,7 @@
   "version": "0.1.0",
   "private": true,
   "dependencies": {
+    "prop-types": "^15.6.0",
     "autosuggest-highlight": "3.1.1",
     "classnames": "^2.2.5",
     "downshift": "1.25.0",
