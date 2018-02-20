@@ -9,6 +9,7 @@ import {Paths} from './components/path/path';
 import AddPath from './components/path/createPath'
 import Login from './components/login'
 import Page404 from './components/404'
+import Notebook from './modules/notebook'
 
 const Root=()=>(
   <Switch>
@@ -17,6 +18,7 @@ const Root=()=>(
     <PrivateRoute path="/path" component={Paths} />
     <LoginRoute path="/login" component={Login} />
     <Route path="/addpath" exact component={AddPath} />
+    <Route path="/notebook" component={Notebook} />
     <Route path="/" exact component={App} />
     <Route path="/*" component={Page404}/>
   </Switch>
