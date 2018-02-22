@@ -13,6 +13,7 @@ import Paper from 'material-ui/Paper';
 import Checkbox from 'material-ui/Checkbox';
 import Switch from 'material-ui/Switch';
 import SwapVertIcon from 'material-ui-icons/SwapVert';
+import Tabs, { Tab } from 'material-ui/Tabs';
 
 
 // components
@@ -22,12 +23,14 @@ import EnhancedTableToolbar from '../table/enhancedTableToolbar';
 import Button from 'material-ui/Button/Button';
 import Notification from '../notification'
 import StudentRow from "./studentRow"
+import Notebook from '../../modules/notebook'
 
 
 const styles = theme => ({
   root: {
     width: '100%',
     marginTop: theme.spacing.unit * 3,
+    flexGrow: 1,
   },
   table: {
     minWidth: 800,
@@ -56,6 +59,8 @@ class AssignmentLists extends React.Component {
       checkedA: true,
       open: false,
       message:null,
+      value: 0,
+      selectedAssignment:''
     };
   }
 
@@ -130,25 +135,48 @@ class AssignmentLists extends React.Component {
     this.setState({ [name]: checked });
   };
 
+  handleTabs = (event, value) => {
+    if(value===1){
+      return;
+    }
+    this.setState({ value });
+  };
+
   deleteData=()=>{
     const {} = this.props;
     this.handleNotification("To be implemented")
     this.setState({selected:[]})
   }
+  openNotebook=(assignment)=>{
+    console.log('selected assignment',assignment.value.path)
+    this.setState({selectedAssignment:assignment.value.path, value:1});
+    
+;  }  
+
 
   isSelected = id => this.state.selected.indexOf(id) !== -1;
 
   render() {
-    const { classes, data, columnData, create, showTable, auth } = this.props;
+    const { classes, data, columnData, create, showTable, auth ,assignments} = this.props;
     let {studentList}=this.props;
-    const { order, orderBy, selected, rowsPerPage, page, open, message } = this.state;
+    const { order, orderBy, selected, rowsPerPage, page, open, message ,value, selectedAssignment} = this.state;
     const emptyRows = studentList ? rowsPerPage - Math.min(rowsPerPage, studentList.length - page * rowsPerPage):'';
     studentList = studentList ?studentList : []; 
     return (
         <div>
       <Notification message={message} open={open} handleClose={this.closeNotification}/>
       {showTable && <Paper className={classes.root}>
-            <EnhancedTableToolbar title='Assignments'  numSelected={selected.length} deleteOpr={this.deleteData} />
+      <Tabs
+          value={this.state.value}
+          indicatorColor="primary"
+          onChange={this.handleTabs}
+          textColor="primary"
+          centered
+        >
+        <Tab label="Assignments" />
+          <Tab label="Notebook" />
+        </Tabs>
+        {value === 0 && <div><EnhancedTableToolbar title='Assignments'  numSelected={selected.length} deleteOpr={this.deleteData} />
             { <div className={classes.tableWrapper}>
             <Table className={classes.table}>
                 <EnhancedTableHead
@@ -166,7 +194,7 @@ class AssignmentLists extends React.Component {
                 const isSelected = this.isSelected(student.key);
                 const isMe=student.key===auth.uid ? true:false;
                 return (
-                <StudentRow key={student.key} isMe={isMe} assignMentList={columnData} handleNotification={this.handleNotification} userId={student.key}/>                
+                <StudentRow key={student.key} isMe={isMe} assignMentList={assignments} handleNotification={this.handleNotification} openNotebook={(list)=>this.openNotebook(list)} userId={student.key}/>                
                 );
                 })}
                 {emptyRows > 0 && (
@@ -194,8 +222,10 @@ class AssignmentLists extends React.Component {
                 </TableRow>
             </TableFooter>
             </Table>
-            </div>}
-                </Paper> }
+            </div>}</div>}
+        {value === 1 && selectedAssignment && <div><Notebook pathId={selectedAssignment} /></div>}
+            
+        </Paper> }
        
       </div>
     );
@@ -207,7 +237,8 @@ AssignmentLists.propTypes = {
   data: PropTypes.array,
   columnData:PropTypes.array.isRequired,
   create:PropTypes.func.isRequired,
-  showTable:PropTypes.bool.isRequired
+  showTable:PropTypes.bool.isRequired,
+  assignments : PropTypes.array.isRequired
 };
 
 export const AssignmentList = withStyles(styles)(AssignmentLists);

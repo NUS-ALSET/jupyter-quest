@@ -49,6 +49,7 @@ class CreateAssignment extends Component {
             path: '',
             text:'',
             answerType:1,
+            type:'shortAnswer',
             uploadedProblem:null
             }
         this.handleInput=this.handleInput.bind(this)
@@ -61,13 +62,13 @@ class CreateAssignment extends Component {
         handleChange = (event, value) => {
           this.setState({ value });
           if(value==='Notebook'){
-            this.setState({answerType:2});
+            this.setState({answerType:2, type:'Notebook'});
           } else{
-            this.setState({answerType:1});
+            this.setState({answerType:1, type:'shortAnswer'});
           }
         };
-
         
+
         fileHandle = (e) => {
           readJson(e.target.files[0], (data) => {
             this.setState({"uploadedProblem":data});
@@ -84,8 +85,8 @@ class CreateAssignment extends Component {
         // }
 
     render() {
-        const {classes, handleClose, handleSubmit,nameRequired,descRequired,textRequired,pathRequired}  = this.props;
-        const { name, desc, path, text, answerType } = this.state;
+        const { classes, handleClose, handleSubmit, nameRequired, descRequired, textRequired, pathRequired, assignmentPath }  = this.props;
+        const { name, desc, path, text, answerType, type } = this.state;
         if(answerType===1)
         isActive=true
         else
@@ -142,20 +143,21 @@ class CreateAssignment extends Component {
             <Select
             value={this.state.path}
             onChange={this.handleInput}
+            onClick={this.getPathKey}
             input={<Input name="path" id="path" />}
           >
             <MenuItem value="">
               <em>None</em>
             </MenuItem>
-            <MenuItem value="Item 2">Item 2</MenuItem>
-            <MenuItem value="Item 1">Item 1</MenuItem>
-            <MenuItem value="Item 3">Item 3</MenuItem>
+            {assignmentPath && assignmentPath.map((path,index)=>
+            <MenuItem key={index} value={path.key}>{path.value.title}</MenuItem>
+            )}
           </Select>
         { pathRequired && <FormHelperText className="error-text">Path Required</FormHelperText>}
            </FormControl> }
             <div>
             <br/>
-              <Button raised color="primary" type="submit" onClick={() =>{handleSubmit({ name, desc, path, text })}} >Submit</Button>
+              <Button raised color="primary" type="submit" onClick={() =>{handleSubmit({ name, desc, path, text, type })}} >Submit</Button>
               <Button className="cancelBtn" 
               raised color="default" onClick={()=>handleClose()}>Cancel</Button>
             </div>

@@ -11,8 +11,7 @@ import {
 
 import JoinedCourses from "../components/courses/joinedCourses"
 const columnData = [
-  { id: 'name', numeric: false, disablePadding: true, label: 'Course name' },
-  { id: 'empty', numeric: false, disablePadding: true, label: '' }
+  { id: 'name', numeric: false, disablePadding: true, label: 'Course name' }
 ];
 
 

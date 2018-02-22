@@ -1,0 +1,91 @@
+
+.jupyter-default {}
+
+.jupyter-default .stderr {
+  background-color: #FAA;
+}
+
+.jupyter-default .cell + .cell {}
+
+.jupyter-default .output table {
+  border: 1px solid #000;
+}
+
+.jupyter-default .output th {
+  font-weight: bold;
+}
+
+.jupyter-default .output th, .output td {
+  border: 1px solid #000;
+  padding: 0.25em;
+  text-align: left;
+  vertical-align: middle;
+}
+
+.jupyter-default .cell {
+  position: relative;
+}
+
+.jupyter-default .raw-cell {
+  white-space: pre-wrap;
+  background-color: #f5f2f0;
+}
+
+.jupyter-default .output {
+  min-height: 1em;
+  width: 100%;
+  overflow-x: scroll;
+}
+
+.jupyter-default .output img {
+  max-width: 70%;
+  margin-left: auto;
+  margin-right: auto;
+  display: block;
+}
+
+.showCode .input:before {
+  content: "In [" attr(data-prompt-number) "]:";
+  position: absolute;
+  text-align: right;
+  font-family: monospace;
+  color: #999;
+  top: 7px;
+  left: -7.5em;
+  width: 7em;
+}
+
+.showCode .output:before {
+  content: "Out [" attr(data-prompt-number) "]:";
+  position: absolute;
+  font-family: monospace;
+  color: #999;
+  left: -7.5em;
+  margin-top: 7px;
+  width: 7em;
+  text-align: right;
+}
+
+.jupyter-default .stderr > .hljs {
+  background: inherit;
+}
+
+.jupyter-default pre,
+.jupyter-default code {
+  white-space: pre-wrap;
+  padding: 10px;
+  border-radius: 3px;
+  background-color: #f7f7f7;
+  font: 15px Consolas, "Liberation Mono", Menlo, Courier, monospace;
+}
+
+.jupyter-default code {
+  padding: 0;
+}
+
+.jupyter-default pre.stdout,
+.jupyter-default pre.stdout > code,
+.jupyter-default pre.text-output,
+.jupyter-default pre.text-output > code {
+  background-color: inherit;
+}

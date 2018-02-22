@@ -8,14 +8,14 @@ import Paper from 'material-ui/Paper';
 import Tabs, { Tab } from 'material-ui/Tabs';
 
 // components
-import CreateAssignment from '../createAssignment'
-import Notification from '../notification'
-import AppFrame from '../../AppFrame'
+import CreateAssignment from '../../createAssignment'
+import Notification from '../../notification'
+import AppFrame from '../../../AppFrame'
 import {
   AssignmentList, 
   InstructorView, 
-  EditAssignment} from '../assignments/';
-  import { User_Roles_Instructor } from '../../app-constant';
+  EditAssignment} from '../../assignments/';
+  import { User_Roles_Instructor } from '../../../app-constant';
 
 const columnData = [
   { id: 'name', numeric: false, disablePadding: true, label: 'Name' },
@@ -100,8 +100,13 @@ class CourseDetails extends React.Component {
    let newAssignment={
       name:formData.name,
       desc:formData.desc,
-      text:formData.text,
-      path:formData.path
+      assignmentVisibility:true,
+      solutionVisibility:true
+    }
+    if(formData.path){
+      newAssignment.path=formData.path;
+    }else{
+      newAssignment.text=formData.text
     }
     if(formData.name === '' && formData.desc!=='' )
     this.setState({nameRequired:true, descRequired:false})
@@ -135,36 +140,27 @@ class CourseDetails extends React.Component {
     this.closeAssignment()
     }
   };
-componentWillMount(){
-  this.props.firebase.database().ref(`/courses/${this.props.match.params.id}`).once('value')
-  .then((snapshot)=> {
-    const course=snapshot.val();
-    if(course && course.owner===this.props.auth.uid){
-      this.setState({ isInstructor :true})
-    }
-  })
-  .catch(e=>{
-    console.log(e);
-  })
-}
+
   render() {
-    const { classes, assignment, auth, match, userType, student } = this.props;
+    const { classes, assignment, auth, match, userType, student,isInstructor, assignmentPath } = this.props;
     // get the array of assignments
     let assignments = assignment ? assignment[match.params.id] : [];
-    const { open, message, showTable,nameRequired,descRequired,textRequired,pathRequired,isInstructor  } = this.state;
+    const { open, message, showTable,nameRequired,descRequired,textRequired,pathRequired  } = this.state;
      if(assignments){
-      columnDataForAssignmentLists=[{ id: 0, numeric: false, disablePadding: true, label: 'Student Name' }]
-      assignments.map((item,index) => { 
-       columnDataForAssignmentLists.push({id: ++index, numeric: false, disablePadding: true, label: item.value.name})
+      columnDataForAssignmentLists=[{ id: 0, numeric: false, disablePadding: true, label: 'Student Name'}]
+      assignments.map((item,index) => {
+       let data={id: ++index, numeric: false, disablePadding: true, label: item.value.name};
+       let links=item.value.desc ? item.value.desc.match(/(https?:\/\/[^\s]+)/) : [];
+       data.detailsLink=links ? links[0] : null;
+       columnDataForAssignmentLists.push(data);
     })
    }
-      
     let activeTab = <h2>No Data</h2>;
     switch (this.state.value) {
       case 0 : {
         activeTab = assignments ? <AssignmentList  firebase={this.props.firebase} uid={match.params.id} 
         create={this.createAssignment} columnData={columnDataForAssignmentLists} auth = {auth} 
-        data={assignments} showTable={showTable} studentList = {student} /> : <h2>No data</h2>;
+        data={assignments} showTable={showTable} studentList = {student} assignments={assignments} /> : <h2>No data</h2>;
         break;
       }
       case 1 : {
@@ -184,7 +180,6 @@ componentWillMount(){
         break;
       }
     }
-
 
     return (
       <div>
@@ -213,6 +208,7 @@ componentWillMount(){
           descRequired={descRequired}
           textRequired={textRequired}
           pathRequired={pathRequired}
+          assignmentPath={assignmentPath}
           /> }
         </AppFrame>
      
@@ -223,19 +219,30 @@ componentWillMount(){
 }
 
 const AssignmentWithFirebase = compose(
-  firebaseConnect( (props, store) => [
+  firebaseConnect( (props, store) => 
+  {
+    const uid=store.getState().firebase.auth.uid;
+ return [
       {
         path: `assignments/${props.match.params.id}/`,
+        queryParams:  props.assignmentQueryParams
       },
       {
         path:`courseMembers/${props.match.params.id}/`,
         storeAs:'student'
-      }
-    ]),
+      },
+      {  
+      path:'path',
+      storeAs:'assignmentPath',
+      queryParams:  [ 'orderByChild=owner', `equalTo=${uid}` ]
+      },
+    ]
+  }),
   connect(({ firebase }) => ({ 
     auth: firebase.auth, 
     assignment: firebase.ordered.assignments,
-    student: firebase.ordered.student
+    student: firebase.ordered.student,
+    assignmentPath: firebase.ordered.assignmentPath
   }))
 )(CourseDetails)
 

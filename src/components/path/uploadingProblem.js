@@ -11,6 +11,7 @@ import List, { ListItem, ListItemIcon, ListItemText } from 'material-ui/List'
 import StarIcon from 'material-ui-icons/Star'
 import TextField from 'material-ui/TextField/TextField';
 import readJson from '../../helpers/readJson.js';
+import { FormHelperText } from 'material-ui/Form';
 
 function getModalStyle() {
   const top = '50';
@@ -63,7 +64,7 @@ class UploadsQuestions extends React.Component {
 
   render() {
     const {uploadedProblem} = this.state;
-    const { classes, openFile, handleCloseFile, name, handleInput, handleSubmitFile } = this.props;
+    const { classes, openFile, handleCloseFile, name, handleInput, handleSubmitFile, problemRequired } = this.props;
     return (
       <div>
         <Modal
@@ -83,7 +84,6 @@ class UploadsQuestions extends React.Component {
                 value={name}
                 onChange={handleInput}
                 />
-           {/* <FormHelperText className="error-text">Name Required</FormHelperText> */}
         </div>
         </div><br/><br/>
             </Typography>
@@ -95,6 +95,7 @@ class UploadsQuestions extends React.Component {
               type="file"
               onChange={this.fileHandle}
             />
+             {problemRequired && <FormHelperText className="error-text">Name & file Required</FormHelperText>}
             <br />
             <label style={{marginRight:'10px'}} htmlFor="raised-button-file">
               <Button raised component="span" color="default" className={classes.button}> Upload File </Button>

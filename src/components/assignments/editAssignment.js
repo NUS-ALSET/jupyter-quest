@@ -50,7 +50,6 @@ class EditAssignments extends React.Component {
       selected: [],
       page: 0,
       rowsPerPage: 5,
-      checkedA: true,
       open: false,
       message:null,
     };
@@ -89,7 +88,12 @@ class EditAssignments extends React.Component {
  handleNotification = (msg) =>{
     this.setState({ open: true,message:msg });
   };
-
+  handleAssignmentVisibility = assignment => event => {
+    this.props.firebase.set(`assignments/${this.props.uid}/${assignment.key}/assignmentVisibility`, event.target.checked);
+  }
+  handleSolutionVisibility = assignment => event => {
+    this.props.firebase.set(`assignments/${this.props.uid}/${assignment.key}/solutionVisibility`, event.target.checked);
+  }
   closeNotification = () => {
     this.setState({ open: false });
   };
@@ -121,10 +125,6 @@ class EditAssignments extends React.Component {
 
   handleChangeRowsPerPage = event => {
     this.setState({ rowsPerPage: event.target.value });
-  };
-
-  handleChange = name => (event, checked) => {
-    this.setState({ [name]: checked });
   };
 
   deleteData=()=>{
@@ -164,35 +164,33 @@ class EditAssignments extends React.Component {
                 rowCount={data.length}
                 />
                 <TableBody>
-                {data.slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage).map((n,id) => {
-                const isSelected = this.isSelected(n.key);
+                {data.slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage).map((assignment,id) => {
+                const isSelected = this.isSelected(assignment.key);
                 return (
                     <TableRow
                     hover
-                    onClick={event => this.handleClick(event, n.key)}
+                    onClick={event => this.handleClick(event, assignment.key)}
                     role="checkbox"
                     aria-checked={isSelected}
                     tabIndex={-1}
-                    key={n.key}
+                    key={assignment.key}
                     selected={isSelected}
                     >
                     <TableCell padding="checkbox">
                         <Checkbox checked={isSelected} />
                     </TableCell>
-                    <TableCell padding="none">{n.value.name}</TableCell>
+                    <TableCell padding="none">{assignment.value.name}</TableCell>
                     <TableCell numeric>
                     <Switch
-                       // checked={this.state.checkedA}
-                        onChange={this.handleChange('checkedA')}
-                        aria-label="checkedA"
+                        checked={assignment.value.assignmentVisibility}
+                        onChange={this.handleAssignmentVisibility(assignment)}
                         />
                     </TableCell>
                     <TableCell numeric>
                     <Switch
-                       // checked={this.state.checkedB}
-                        onChange={this.handleChange('checkedB')}
-                        aria-label="checkedB"
-                        />
+                      checked={assignment.value.solutionVisibility}
+                      onChange={this.handleSolutionVisibility(assignment)}
+                    />
                     </TableCell>
                     <TableCell className={classes.paddingLt}>22/12/2017</TableCell>
                     <TableCell className={classes.paddingLt}>5:45 AM</TableCell>

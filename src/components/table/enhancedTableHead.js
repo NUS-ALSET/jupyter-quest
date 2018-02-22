@@ -27,7 +27,7 @@ class EnhancedTableHead extends React.Component {
   
     render() {
       const { onSelectAllClick, order, orderBy, numSelected, rowCount, columnData, isCheckbox } = this.props;
-  
+    
       return (
         <TableHead>
         <TableRow>
@@ -45,7 +45,7 @@ class EnhancedTableHead extends React.Component {
                 numeric={column.numeric}
                 padding={column.disablePadding ? 'none' : 'default'}
                 sortDirection={orderBy === column.id ? order : false}
-              >
+                >
                 <Tooltip
                   title="Sort"
                   placement={column.numeric ? 'bottom-end' : 'bottom-start'}
@@ -56,7 +56,12 @@ class EnhancedTableHead extends React.Component {
                     direction={order}
                     // onClick={this.createSortHandler(column.id)}
                   >
-                    {column.label}
+                  <p>{column.label}</p>
+                  <p >
+                  {
+                    column.detailsLink && (<a className={"nextline"} target="_blank" href={column.detailsLink}>Details</a>)
+                  }
+                  </p>                 
                   </TableSortLabel>
 
                 </Tooltip>

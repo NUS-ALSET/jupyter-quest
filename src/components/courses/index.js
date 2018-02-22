@@ -1,4 +1,4 @@
-export * from './courseDetail';
+export * from './course-details';
 export * from './createCourse';
 export * from './joinedCourses';
 export * from './myCourses';
