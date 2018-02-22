@@ -1,16 +1,35 @@
 import React from 'react'
-import AppFrame from '../../AppFrame'
+import PropTypes from 'prop-types';
+import { compose } from 'redux'
+import { connect } from 'react-redux'
+import { firebaseConnect } from 'react-redux-firebase'
 import Jupyter from './components'
-import notebookJSON from './notebook-json-data'
 
-const Notebook =()=>(
-  <AppFrame pageTitle="Notebook" >
-      <Jupyter
-      notebook={notebookJSON}
-      showCode={true}
-      defaultStyle={true}
-      loadMathjax={true} 
-    />
-  </AppFrame>
-)
-export default Notebook
+const Notebook =({pathId,notebookProblems})=>{
+return(
+  <div>
+      {notebookProblems && notebookProblems.map((problems,index)=>{
+        return <Jupyter key={index}
+        notebook={problems.value.file}
+        showCode={true}
+        defaultStyle={true}
+        loadMathjax={true} 
+      />
+      })}
+      
+  </div>
+)}
+
+export default compose(
+  firebaseConnect( (props, store) => [
+      {
+        path: `problems/${props.pathId}`,
+        storeAs:'notebookProblems'
+      },
+    ]),
+  connect(({ firebase }, props) => ({ 
+    notebookProblems: firebase.ordered.notebookProblems
+  }))
+)(Notebook)
+
+

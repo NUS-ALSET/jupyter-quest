@@ -63,7 +63,8 @@ class Path extends Component {
   }
   submitPath=(path)=>{
     let pathData = {
-        title: path
+        title: path,
+        owner:this.props.auth.uid
     }
     this.props.firebase.push(`path`, pathData).then( data => {
       this.setState({createPath:false, isActive: false})
@@ -79,7 +80,7 @@ cancelPath=()=>{
 
   render() {
     const {isActive, spacing, open, selected, createPath} = this.state
-    const {path, classes, firebase} = this.props;
+    const { path, classes, firebase, auth } = this.props;
 
     let comp = null;
     if(this.state.createPath){
@@ -97,7 +98,7 @@ cancelPath=()=>{
          <div key={index}>
          <ListItem button onClick={(e)=>this.handleClick(e,index, pathItem.key)}>
            <ListItemText primary={pathItem.value.title} />
-           {pathItem.value.problems && <div>{open===index ? <ExpandLess /> : <ExpandMore />}</div>}
+           {open===index ? <ExpandLess /> : <ExpandMore />}
            
          </ListItem>
          
@@ -138,8 +139,17 @@ Path.propTypes = {
 
 }
 const PathWithFirebase = compose(
-  firebaseConnect( ['path'] ),
-  connect( ({firebase}) => ({path: firebase.ordered.path}) )
+  firebaseConnect( (props, store) => 
+  {
+    const uid=store.getState().firebase.auth.uid;
+    return [
+      {
+        path:`path`,
+        queryParams:  [ 'orderByChild=owner', `equalTo=${uid}` ]
+      }
+    ]
+  }),
+  connect( ({firebase}) => ({path: firebase.ordered.path, auth: firebase.auth, }) )
 )(Path)
 
 export const Paths =  withStyles(styles)(PathWithFirebase)

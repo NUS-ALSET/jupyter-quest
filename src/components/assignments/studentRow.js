@@ -15,10 +15,10 @@ class StudentRow extends React.Component {
 
 
   render() {
-    const {userId,isMe,displayName, handleNotification}=this.props;
-    let {assignMentList}=this.props;
-    const isSelected=false; 
-    assignMentList=assignMentList.filter(list=>list.id!==0)
+    const {userId, isMe, displayName, handleNotification, openNotebook}=this.props;
+    const { assignMentList }=this.props;
+    const isSelected = false; 
+
     return (
         
             <TableRow
@@ -36,7 +36,11 @@ class StudentRow extends React.Component {
                     {assignMentList.map((list,index)=>{
                       return(
                        <TableCell key={index} padding="none">
-                       {isMe ? <Button raised color="default" onClick={()=>handleNotification("Function to be developed")}>Edit</Button> : 'NOT COMPLETED'} 
+                       {isMe ? <div>
+                       {list.value.path && <Button raised color="default" onClick={()=>openNotebook(list)}>View</Button>} 
+                       <Button raised color="default" onClick={()=>handleNotification("Function to be developed")}>Submit</Button>
+                       </div>
+                       : 'NOT COMPLETED'} 
                        </TableCell >)
                     })}
                     </TableRow> 

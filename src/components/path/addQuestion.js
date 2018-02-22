@@ -64,7 +64,8 @@ class AddQuestions extends React.Component {
     pathId:'',
     isActive:false,
     open:false,
-    title:null
+    title:null,
+    problemRequired:false
   };
 }
 handleNotification = (msg) => {
@@ -78,21 +79,27 @@ handleInput=(e)=>{
 this.setState({[e.target.name]:e.target.value})
 }
 submitProblem=(formData)=>{
+  if(formData.name && formData.uploadedProblem){
   let problemData = {problem:formData.name, file:formData.uploadedProblem}
   this.props.firebase.push(`/problems/${this.state.pathId}/`, problemData)
   .then( data => {
     // wait for db to send response\
     let pathTitle = this.state.title;
-  this.props.firebase.set(`/path/${this.state.pathId}/`, {problems:true, title:pathTitle})
+  this.props.firebase.push(`/path/${this.state.pathId}/`, {problems:true, title:pathTitle})
   .then( data => {
     this.handleNotification('Problem Added Successfully');
   })
-  this.setState({name:''})
+  this.setState({name:'', problemRequired:false})
   this.closeProblem()
   this.props.handleClose()
   }) 
   .catch( error => {console.error(error)} )
 }
+else{
+this.setState({problemRequired:true})
+}
+}
+
 createProblem=(id, pathTitle)=>{
   this.setState({isActive:true, pathId:id, title:pathTitle})
 }
@@ -103,7 +110,7 @@ closeProblem=()=>{
 
   render() {
     const { classes, openModel, handleClose, allPath, addpath} = this.props;
-    const {message, open} = this.state
+    const {message, open, problemRequired} = this.state
     return (
       <div>
          <Notification message={message} open={open} handleClose={this.closeNotification}/>
@@ -157,6 +164,7 @@ closeProblem=()=>{
           handleInput={(e)=>this.handleInput(e)} 
           handleSubmitFile={this.submitProblem}
           name={this.state.name}
+          problemRequired={problemRequired}
           />
       </div>
     );
