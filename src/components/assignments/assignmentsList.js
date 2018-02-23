@@ -10,20 +10,13 @@ import Table, {
   TableRow,
 } from 'material-ui/Table';
 import Paper from 'material-ui/Paper';
-import Checkbox from 'material-ui/Checkbox';
-import Switch from 'material-ui/Switch';
-import SwapVertIcon from 'material-ui-icons/SwapVert';
-import Tabs, { Tab } from 'material-ui/Tabs';
-
 
 // components
 
 import EnhancedTableHead from '../table/enhancedTableHead';
 import EnhancedTableToolbar from '../table/enhancedTableToolbar';
-import Button from 'material-ui/Button/Button';
 import Notification from '../notification'
 import StudentRow from "./studentRow"
-import Notebook from '../../modules/notebook'
 
 
 const styles = theme => ({
@@ -59,8 +52,6 @@ class AssignmentLists extends React.Component {
       checkedA: true,
       open: false,
       message:null,
-      value: 0,
-      selectedAssignment:''
     };
   }
 
@@ -135,49 +126,26 @@ class AssignmentLists extends React.Component {
     this.setState({ [name]: checked });
   };
 
-  handleTabs = (event, value) => {
-    if(value===1){
-      return;
-    }
-    this.setState({ value });
-  };
 
   deleteData=()=>{
-    const {} = this.props;
     this.handleNotification("To be implemented")
     this.setState({selected:[]})
   }
-  openNotebook=(assignment)=>{
-    console.log('selected assignment',assignment.value.path)
-    this.setState({selectedAssignment:assignment.value.path, value:1});
-    
-;  }  
-
 
   isSelected = id => this.state.selected.indexOf(id) !== -1;
 
   render() {
-    const { classes, data, columnData, create, showTable, auth ,assignments} = this.props;
+    const { classes, columnData, showTable, auth ,assignments,openNotebook} = this.props;
     let {studentList}=this.props;
-    const { order, orderBy, selected, rowsPerPage, page, open, message ,value, selectedAssignment} = this.state;
+    const { order, orderBy, selected, rowsPerPage, page, open, message } = this.state;
     const emptyRows = studentList ? rowsPerPage - Math.min(rowsPerPage, studentList.length - page * rowsPerPage):'';
     studentList = studentList ?studentList : []; 
     return (
         <div>
       <Notification message={message} open={open} handleClose={this.closeNotification}/>
-      {showTable && <Paper className={classes.root}>
-      <Tabs
-          value={this.state.value}
-          indicatorColor="primary"
-          onChange={this.handleTabs}
-          textColor="primary"
-          centered
-        >
-        <Tab label="Assignments" />
-          <Tab label="Notebook" />
-        </Tabs>
-        {value === 0 && <div><EnhancedTableToolbar title='Assignments'  numSelected={selected.length} deleteOpr={this.deleteData} />
-            { <div className={classes.tableWrapper}>
+      {showTable  && <Paper className={classes.root}>
+         <div><EnhancedTableToolbar title='Assignments'  numSelected={selected.length} deleteOpr={this.deleteData} />
+            <div className={classes.tableWrapper}>
             <Table className={classes.table}>
                 <EnhancedTableHead
                 columnData={columnData}
@@ -191,10 +159,9 @@ class AssignmentLists extends React.Component {
                 <TableBody>
                   
                 {studentList.slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage).map((student,id) => {
-                const isSelected = this.isSelected(student.key);
                 const isMe=student.key===auth.uid ? true:false;
                 return (
-                <StudentRow key={student.key} isMe={isMe} assignMentList={assignments} handleNotification={this.handleNotification} openNotebook={(list)=>this.openNotebook(list)} userId={student.key}/>                
+                <StudentRow key={student.key} isMe={isMe} assignMentList={assignments} handleNotification={this.handleNotification} openNotebook={(list)=>openNotebook(list)} userId={student.key}/>                
                 );
                 })}
                 {emptyRows > 0 && (
@@ -222,9 +189,7 @@ class AssignmentLists extends React.Component {
                 </TableRow>
             </TableFooter>
             </Table>
-            </div>}</div>}
-        {value === 1 && selectedAssignment && <div><Notebook pathId={selectedAssignment} /></div>}
-            
+            </div></div>}           
         </Paper> }
        
       </div>
@@ -234,9 +199,7 @@ class AssignmentLists extends React.Component {
 
 AssignmentLists.propTypes = {
   classes: PropTypes.object.isRequired,
-  data: PropTypes.array,
   columnData:PropTypes.array.isRequired,
-  create:PropTypes.func.isRequired,
   showTable:PropTypes.bool.isRequired,
   assignments : PropTypes.array.isRequired
 };

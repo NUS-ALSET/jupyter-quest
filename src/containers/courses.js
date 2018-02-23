@@ -5,7 +5,6 @@ import { firebaseConnect } from 'react-redux-firebase'
 import PropTypes from 'prop-types'
 import { compose } from 'redux'
 import { connect } from 'react-redux'
-import Typography from 'material-ui/Typography';
 import AppFrame from '../AppFrame'
 import CourseTable from '../components/courses';
 import Modal from 'material-ui/Modal';
@@ -145,14 +144,13 @@ function getModalStyle() {
        //  push data to firebase
        this.props.firebase.push('courses', course).then(data => {
           // wait for db to send response\
-        this.setState({ courseLink: `${BASE_URL}courses/${data.key}` });
+        this.setState({ courseLink: `${BASE_URL}#/courses/${data.key}` });
         this.props.firebase.set(`coursePasswords/${data.key}`, passsword);
           this.handleNotification(`Course Added Successfuly!`);
       });
   }
   render(){
-    const {classes, courses, auth, firebase, publicCourses, joinedCourses, joinCourse, 
-      passwordMatchLoading, joinPwdLoading }  = this.props;
+    const {classes, courses, auth, firebase, publicCourses, joinedCourses}  = this.props;
     const { open, message, courseLink, nameRequired, pwdRequired ,coursePwdMatched} = this.state;
     let publicCourse;
     if(publicCourses){

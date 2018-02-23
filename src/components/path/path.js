@@ -4,7 +4,7 @@ import PropTypes from 'prop-types'
 import AppFrame from '../../AppFrame'
 import Button from 'material-ui/Button/Button';
 import {AddQuestion} from './addQuestion'
-import List, { ListItem, ListItemIcon, ListItemText } from 'material-ui/List'
+import List, { ListItem, ListItemText } from 'material-ui/List'
 import { compose } from 'redux'
 import { connect } from 'react-redux'
 import { firebaseConnect } from 'react-redux-firebase'
@@ -13,12 +13,10 @@ import Paper from 'material-ui/Paper';
 import withStyles from 'material-ui/styles/withStyles';
 import ExpandLess from 'material-ui-icons/ExpandLess';
 import ExpandMore from 'material-ui-icons/ExpandMore';
-import Collapse from 'material-ui/transitions/Collapse';
 import CreatePath from './createPath';
 
 // components
 import {Problem} from './'
-import Typography from 'material-ui/Typography/Typography';
 
 const styles = theme => ({
   root: {
@@ -79,8 +77,8 @@ cancelPath=()=>{
 }
 
   render() {
-    const {isActive, spacing, open, selected, createPath} = this.state
-    const { path, classes, firebase, auth } = this.props;
+    const {isActive, spacing, open, selected} = this.state
+    const {path, classes, firebase} = this.props;
 
     let comp = null;
     if(this.state.createPath){
@@ -98,7 +96,7 @@ cancelPath=()=>{
          <div key={index}>
          <ListItem button onClick={(e)=>this.handleClick(e,index, pathItem.key)}>
            <ListItemText primary={pathItem.value.title} />
-           {open===index ? <ExpandLess /> : <ExpandMore />}
+           {pathItem.value.problems && <div>{open===index ? <ExpandLess /> : <ExpandMore />}</div>}
            
          </ListItem>
          
@@ -110,7 +108,7 @@ cancelPath=()=>{
        
      </Paper>
       <AddQuestion
-          openModel={this.state.isActive} 
+          openModel={isActive} 
           handleClose={this.closeQuestion} 
           allPath={this.props.path}
           addpath={this.enableCreatePath}
@@ -141,15 +139,21 @@ Path.propTypes = {
 const PathWithFirebase = compose(
   firebaseConnect( (props, store) => 
   {
-    const uid=store.getState().firebase.auth.uid;
-    return [
-      {
-        path:`path`,
-        queryParams:  [ 'orderByChild=owner', `equalTo=${uid}` ]
-      }
-    ]
+  const uid=store.getState().firebase.auth.uid;
+ return [
+    {
+      path:`path`,
+      queryParams:  [ 'orderByChild=owner', `equalTo=${uid}` ]
+    }
+  ]
   }),
   connect( ({firebase}) => ({path: firebase.ordered.path, auth: firebase.auth, }) )
 )(Path)
+
+Path.propTypes={
+   path:PropTypes.array,
+   classes:PropTypes.object.isRequired,
+   firebase:PropTypes.object.isRequired
+}
 
 export const Paths =  withStyles(styles)(PathWithFirebase)

@@ -48,8 +48,7 @@ class CreateAssignment extends Component {
             value: '',
             path: '',
             text:'',
-            answerType:1,
-            type:'shortAnswer',
+            answerType:1,                                                                         type:'shortAnswer',
             uploadedProblem:null
             }
         this.handleInput=this.handleInput.bind(this)
@@ -68,7 +67,6 @@ class CreateAssignment extends Component {
           }
         };
         
-
         fileHandle = (e) => {
           readJson(e.target.files[0], (data) => {
             this.setState({"uploadedProblem":data});
@@ -85,7 +83,7 @@ class CreateAssignment extends Component {
         // }
 
     render() {
-        const { classes, handleClose, handleSubmit, nameRequired, descRequired, textRequired, pathRequired, assignmentPath }  = this.props;
+        const {classes, handleClose, handleSubmit,nameRequired,descRequired,textRequired,pathRequired,assignmentPath}  = this.props;
         const { name, desc, path, text, answerType, type } = this.state;
         if(answerType===1)
         isActive=true

@@ -72,8 +72,7 @@ const styles = theme => ({
           <StarIcon />
         </ListItemIcon>
         <ListItemText primary="About" />
-      </ListItem>
-      
+        </ListItem>                                                                                                                                                                                                           
     </List>
   </div>
 )
@@ -81,14 +80,10 @@ const styles = theme => ({
 }
 
 
-function btn_logout() {
-  console.log("CLICK!")
-}
-
 const AppBarMenuItems = ({ onClick, logout }) => (
   <div>
-    <MenuItem onClick={() => { onClick(); btn_logout(); }}>My account</MenuItem>
-    <MenuItem onClick={() => { logout(); btn_logout(); }}>Logout</MenuItem>
+    <MenuItem onClick={() => { onClick(); }}>My account</MenuItem>
+    <MenuItem onClick={() => { logout(); }}>Logout</MenuItem>
   </div>
 )
 

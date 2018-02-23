@@ -1,6 +1,6 @@
 import React from 'react'
 import Collapse from 'material-ui/transitions/Collapse';
-import List, { ListItem, ListItemIcon, ListItemText } from 'material-ui/List'
+import List, { ListItem, ListItemText } from 'material-ui/List'
 import { firebaseConnect } from 'react-redux-firebase';
 import { connect } from 'react-redux';
 import { compose } from 'redux';

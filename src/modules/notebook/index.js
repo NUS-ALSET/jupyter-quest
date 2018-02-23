@@ -32,4 +32,9 @@ export default compose(
   }))
 )(Notebook)
 
+Notebook.propTypes={
+  pathId:PropTypes.string.isRequired,
+  notebookProblems:PropTypes.array
+}
+
 

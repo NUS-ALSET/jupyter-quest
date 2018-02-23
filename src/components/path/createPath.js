@@ -1,13 +1,9 @@
 
 import React from 'react'
-import { Redirect } from 'react-router-dom';
 import Typography from 'material-ui/Typography';
 import { FormHelperText, FormControl } from 'material-ui/Form';
 import Button from 'material-ui/Button';
 import TextField from 'material-ui/TextField';
-import { compose } from 'redux'
-import { connect } from 'react-redux'
-import { firebaseConnect } from 'react-redux-firebase'
 
 import Notification from '../notification'
 
@@ -41,8 +37,8 @@ import Notification from '../notification'
         }
     }
     render(){
-        const {path, message, open, pathAdded,errorPath} = this.state
-        const {auth, submitPath, cancelPath} = this.props
+        const {path, message, open,errorPath} = this.state
+        const {cancelPath} = this.props
 return (
     <div>
         <Notification message={message} open={open} handleClose={this.closeNotification}/>
@@ -71,17 +67,4 @@ return (
 }
 }
 
-const AddPath = compose(
-    firebaseConnect( (props, store) =>{
-        const uid=store.getState().firebase.auth.uid;
-        return [
-            {
-                path:'path',
-                queryParams:  [ 'orderByChild=owner', `equalTo=${uid}` ]
-            }      
-        ] 
-    }),
-    connect( ({firebase}) => ({ auth: firebase.auth}) )
-  )(AddPaths)
-
-  export default AddPath
+  export default AddPaths

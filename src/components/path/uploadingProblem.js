@@ -5,10 +5,6 @@ import { withStyles } from 'material-ui/styles';
 import Typography from 'material-ui/Typography';
 import Modal from 'material-ui/Modal';
 import Button from 'material-ui/Button';
-import { Link } from 'react-router-dom';
-import AddIcon from 'material-ui-icons/Add';
-import List, { ListItem, ListItemIcon, ListItemText } from 'material-ui/List'
-import StarIcon from 'material-ui-icons/Star'
 import TextField from 'material-ui/TextField/TextField';
 import readJson from '../../helpers/readJson.js';
 import { FormHelperText } from 'material-ui/Form';

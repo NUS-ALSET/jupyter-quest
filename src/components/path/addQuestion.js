@@ -5,13 +5,9 @@ import { withStyles } from 'material-ui/styles';
 import Typography from 'material-ui/Typography';
 import Modal from 'material-ui/Modal';
 import Button from 'material-ui/Button';
-import { Link } from 'react-router-dom';
 import AddIcon from 'material-ui-icons/Add';
 import List, { ListItem, ListItemIcon, ListItemText } from 'material-ui/List'
 import StarIcon from 'material-ui-icons/Star'
-import { compose } from 'redux'
-import { connect } from 'react-redux'
-import { firebaseConnect } from 'react-redux-firebase'
 import {UploadsQuestion} from './uploadingProblem'
 import Notification from '../notification'
 
@@ -84,8 +80,8 @@ submitProblem=(formData)=>{
   this.props.firebase.push(`/problems/${this.state.pathId}/`, problemData)
   .then( data => {
     // wait for db to send response\
-    let pathTitle = this.state.title;
-  this.props.firebase.push(`/path/${this.state.pathId}/`, {problems:true, title:pathTitle})
+    
+    this.props.firebase.set(`/path/${this.state.pathId}/problems`,true)
   .then( data => {
     this.handleNotification('Problem Added Successfully');
   })
