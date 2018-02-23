@@ -12,7 +12,7 @@ class StudentRow extends React.Component {
 
   render() {
     const { userId, isMe, displayName, handleNotification, openNotebook } = this.props;
-    const { assignMentList } = this.props;
+    const { assignMentList =[] } = this.props;
     const isSelected = false; 
 
     return (

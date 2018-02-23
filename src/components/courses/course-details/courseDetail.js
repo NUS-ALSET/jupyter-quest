@@ -77,13 +77,14 @@ class CourseDetails extends React.Component {
       descRequired: false,
       textRequired: false,
       pathRequired: false,
+      problemRequired : false,
       value: 0,
       isInstructor : false,
       selectedAssignment : null
     };
   }
   openNotebook=(assignment)=>{
-    this.setState({selectedAssignment:assignment.value.path, value:1});
+    this.setState({selectedAssignment:assignment, value:1});
   }  
 
   closeAssignment=()=>{
@@ -95,6 +96,7 @@ class CourseDetails extends React.Component {
   closeNotification = () => {
     this.setState({ open: false });
   };
+ 
   submitAssignment=(formData)=>{
    let newAssignment={
       name:formData.name,
@@ -102,19 +104,49 @@ class CourseDetails extends React.Component {
       assignmentVisibility:false,
       solutionVisibility:false
     }
-    if(formData.path){
-      newAssignment.path=formData.path;
+    let error=false;
+    if(formData.name === ''){
+      this.setState({nameRequired:true});
+      error=true;
     }else{
+      this.setState({nameRequired:false});
+    }
+    if(formData.desc === ''){
+      this.setState({descRequired:true});
+      error=true;
+    }else{
+      this.setState({descRequired:false});
+    }
+    if(formData.type==='Notebook'){
+      if(formData.path === ''){
+        this.setState({pathRequired:true});
+        error=true;
+       
+      }else{
+        this.setState({pathRequired:false})
+      }
+      if(formData.problem === ''){
+        this.setState({problemRequired:true})
+        error=true;
+       
+      }else{
+        this.setState({problemRequired:false})
+      }
+      newAssignment.path=formData.path;
+      newAssignment.problem = formData.problem;
+    }else{
+      if(formData.text === ''){
+        this.setState({textRequired:true})
+        error=true;
+       
+      }else{
+        this.setState({textRequired:false})
+      }
       newAssignment.text=formData.text
     }
-    if(formData.name === '' && formData.desc!=='' )
-    this.setState({nameRequired:true, descRequired:false})
-    if(formData.name !== '' && formData.desc==='' )
-    this.setState({nameRequired:false, descRequired:true})
-    if(formData.name === '' && formData.desc==='')
-    this.setState({nameRequired:true, descRequired:true})
-    if(formData.name !== '' && formData.desc !==''){
-    this.setState({pwdRequired:false, nameRequired:false})
+    if(error){
+      return;
+    }
     const ref=`assignments/${this.props.match.params.id}`;
     this.props.firebase.push(ref, newAssignment)
     .then( data => {
@@ -126,7 +158,6 @@ class CourseDetails extends React.Component {
     .catch(e=>{
       console.log(e);
     })
-  }
   }
 
   createAssignment=()=>{
@@ -147,7 +178,7 @@ class CourseDetails extends React.Component {
     const { classes, assignment, auth, match, student,isInstructor, assignmentPath } = this.props;
     // get the array of assignments
     let assignments = assignment ? assignment[match.params.id] : [];
-    const { open, message, showTable,nameRequired,descRequired,textRequired,pathRequired,selectedAssignment } = this.state;
+    const { open, message, showTable,nameRequired,descRequired,textRequired,pathRequired,problemRequired,selectedAssignment } = this.state;
      if(assignments){
       columnDataForAssignmentLists=[{ id: 0, numeric: false, disablePadding: true, label: 'Student Name'}]
       assignments.map((item,index) => {
@@ -167,7 +198,7 @@ class CourseDetails extends React.Component {
         break;
       }
       case 1: {
-        activeTab =<div>{selectedAssignment && <Notebook pathId={selectedAssignment} />} </div>
+        activeTab =<div>{selectedAssignment.value.path && selectedAssignment.value.problem && <Notebook assignment={selectedAssignment} />} </div>
         break;
       }
       case 2 : {
@@ -215,6 +246,8 @@ class CourseDetails extends React.Component {
           nameRequired={nameRequired}
           descRequired={descRequired}
           textRequired={textRequired}
+          pathRequired={pathRequired}
+          problemRequired={problemRequired}
           pathRequired={pathRequired}
           assignmentPath={assignmentPath}
           /> }

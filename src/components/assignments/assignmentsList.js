@@ -189,7 +189,8 @@ class AssignmentLists extends React.Component {
                 </TableRow>
             </TableFooter>
             </Table>
-            </div></div>}           
+            </div>
+            </div>        
         </Paper> }
        
       </div>
