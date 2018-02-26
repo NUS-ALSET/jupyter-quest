@@ -12,6 +12,9 @@ install:
 script:
 - npm run-script build
 
+before_deploy:
+- ./scripts/travis-install-functions.sh
+
 deploy:
   skip_cleanup: true
   provider: firebase
