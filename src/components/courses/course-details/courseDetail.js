@@ -182,9 +182,8 @@ class CourseDetails extends React.Component {
      if(assignments){
       columnDataForAssignmentLists=[{ id: 0, numeric: false, disablePadding: true, label: 'Student Name'}]
       assignments.map((item,index) => {
-       let data={id: ++index, numeric: false, disablePadding: true, label: item.value.name};
-       let links=item.value.desc ? item.value.desc.match(/(https?:\/\/[^\s]+)/) : [];
-       data.detailsLink=links ? links[0] : null;
+       let data={id: ++index, numeric: false, disablePadding: true, label: item.value.name, detailsLink: item.value.desc};
+
        columnDataForAssignmentLists.push(data);
        return null;
     } )
