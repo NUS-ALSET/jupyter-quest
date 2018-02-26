@@ -178,22 +178,23 @@ class CourseDetails extends React.Component {
     const { classes, assignment, auth, match, student,isInstructor, assignmentPath } = this.props;
     // get the array of assignments
     let assignments = assignment ? assignment[match.params.id] : [];
+    const visibleAssignments=assignments.filter(assignment=>assignment.value.assignmentVisibility);
     const { open, message, showTable,nameRequired,descRequired,textRequired,pathRequired,problemRequired,selectedAssignment } = this.state;
-     if(assignments){
+     if(visibleAssignments){
       columnDataForAssignmentLists=[{ id: 0, numeric: false, disablePadding: true, label: 'Student Name'}]
-      assignments.map((item,index) => {
+      visibleAssignments.map((item,index) => {
        let data={id: ++index, numeric: false, disablePadding: true, label: item.value.name, detailsLink: item.value.desc};
 
        columnDataForAssignmentLists.push(data);
        return null;
     } )
-   }
+   }  
     let activeTab = <h2>No Data</h2>;
     switch (this.state.value) {
       case 0 : {
         activeTab = assignments ? <AssignmentList  firebase={this.props.firebase} uid={match.params.id} 
         create={this.createAssignment} columnData={columnDataForAssignmentLists} auth = {auth} 
-        showTable={showTable} studentList = {student} assignments={assignments} openNotebook={this.openNotebook}/> : <h2>No data</h2>;
+        showTable={showTable} studentList = {student} assignments={visibleAssignments} openNotebook={this.openNotebook}/> : <h2>No data</h2>;
         break;
       }
       case 1: {
