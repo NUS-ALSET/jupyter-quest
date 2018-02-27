@@ -11,18 +11,12 @@ import Table, {
 } from 'material-ui/Table';
 import Paper from 'material-ui/Paper';
 import Checkbox from 'material-ui/Checkbox';
-import Switch from 'material-ui/Switch';
-import SwapVertIcon from 'material-ui-icons/SwapVert';
-
-
 
 // components
 
 import EnhancedTableHead from '../table/enhancedTableHead';
 import EnhancedTableToolbar from '../table/enhancedTableToolbar';
-import Button from 'material-ui/Button/Button';
 import Notification from '../notification'
-
 
 const styles = theme => ({
   root: {
@@ -40,7 +34,11 @@ const styles = theme => ({
   },
   paddingLs:{
     paddingLeft:'70px'
-  }
+  },
+  container: {
+    display: 'inline-block',
+    flexWrap: 'wrap',
+  },
 });
 
 class InstructorViews extends React.Component {
@@ -55,7 +53,7 @@ class InstructorViews extends React.Component {
       rowsPerPage: 5,
       checkedA: true,
       open: false,
-      message:null,
+      message:null
     };
   }
 
@@ -131,7 +129,6 @@ class InstructorViews extends React.Component {
   };
 
   deleteData=()=>{
-    const {} = this.props;
     this.handleNotification("To be implemented")
     this.setState({selected:[]})
   }
@@ -139,14 +136,14 @@ class InstructorViews extends React.Component {
   isSelected = id => this.state.selected.indexOf(id) !== -1;
 
   render() {
-    const { classes, data, columnData, create, showTable } = this.props;
+    const { classes, data, columnData, showTable , openNotebook} = this.props;
     const { order, orderBy, selected, rowsPerPage, page, open, message } = this.state;
     const emptyRows = data ? rowsPerPage - Math.min(rowsPerPage, data.length - page * rowsPerPage):'';
 
     return (
         <div>
       <Notification message={message} open={open} handleClose={this.closeNotification}/>
-      {showTable && <Paper className={classes.root}>
+      {showTable  && <Paper className={classes.root}>
             <EnhancedTableToolbar title='Assignments'  numSelected={selected.length} deleteOpr={this.deleteData} />
             {data ? <div className={classes.tableWrapper}>
             <Table className={classes.table}>
@@ -175,7 +172,7 @@ class InstructorViews extends React.Component {
                     <TableCell padding="checkbox">
                         <Checkbox checked={isSelected} />
                     </TableCell>
-                    <TableCell padding="none">{n.value.name}</TableCell>
+                    <TableCell padding="none">{n.value.name} <br/>  {n.value.path && (<a href="javascript:void(0)" onClick={()=>{openNotebook(n)}}>View</a>)}</TableCell>
                     <TableCell className={classes.paddingLs}>Complete</TableCell>
                     <TableCell className={classes.paddingLs}>Team1</TableCell>
                     <TableCell className={classes.paddingLs}>Team2</TableCell>

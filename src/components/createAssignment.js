@@ -10,6 +10,8 @@ import { MenuItem } from 'material-ui/Menu';
 import Input, { InputLabel } from 'material-ui/Input';
 import readJson from '../helpers/readJson.js';
 
+import PathProblem from './assignments/problems'
+
 const styles = theme => ({
     container: {
       display: 'inline-block',
@@ -48,15 +50,19 @@ class CreateAssignment extends Component {
             value: '',
             path: '',
             text:'',
-            answerType:1,
-            type:'shortAnswer',
-            uploadedProblem:null
+            answerType:1,                                                                         type:'shortAnswer',
+            uploadedProblem:null,
+            type : "ShortAnswer",
+            problem:''
             }
         this.handleInput=this.handleInput.bind(this)
         }
     
         handleInput(e){
           this.setState({[e.target.name]:e.target.value});
+          if(e.target.name==='path'){
+            this.setState({problem:''});
+          }
         }
 
         handleChange = (event, value) => {
@@ -64,11 +70,10 @@ class CreateAssignment extends Component {
           if(value==='Notebook'){
             this.setState({answerType:2, type:'Notebook'});
           } else{
-            this.setState({answerType:1, type:'shortAnswer'});
+            this.setState({answerType:1, type:'ShortAnswer'});
           }
         };
         
-
         fileHandle = (e) => {
           readJson(e.target.files[0], (data) => {
             this.setState({"uploadedProblem":data});
@@ -85,13 +90,14 @@ class CreateAssignment extends Component {
         // }
 
     render() {
-        const { classes, handleClose, handleSubmit, nameRequired, descRequired, textRequired, pathRequired, assignmentPath }  = this.props;
-        const { name, desc, path, text, answerType, type } = this.state;
+        const {classes, handleClose, handleSubmit,nameRequired,descRequired,textRequired,pathRequired,problemRequired}  = this.props;
+        const { name, desc, path, problem,text, answerType, type } = this.state;
         if(answerType===1)
         isActive=true
         else
         isActive=false
-
+        let {assignmentPath}=this.props;
+        assignmentPath=assignmentPath.filter(path=>path.value.problems);
         return (
             <div className={classes.container} >
             <h2>CREATE ASSIGNMENT</h2>
@@ -138,26 +144,29 @@ class CreateAssignment extends Component {
          { textRequired && <FormHelperText className="error-text">Text Required</FormHelperText>}
             </div>
             </div>}
-         { !isActive && <FormControl className={classes.formControl}>
+         { !isActive && <div> 
+         <FormControl className={classes.formControl}>
             <InputLabel htmlFor="age-simple">Choose Path</InputLabel>
             <Select
             value={this.state.path}
             onChange={this.handleInput}
-            onClick={this.getPathKey}
             input={<Input name="path" id="path" />}
           >
             <MenuItem value="">
               <em>None</em>
             </MenuItem>
             {assignmentPath && assignmentPath.map((path,index)=>
-            <MenuItem key={index} value={path.key}>{path.value.title}</MenuItem>
+            <MenuItem key={index} value={path.key} >{path.value.title}</MenuItem>
             )}
           </Select>
         { pathRequired && <FormHelperText className="error-text">Path Required</FormHelperText>}
-           </FormControl> }
+           </FormControl> 
+          {path && <PathProblem pathId={path} problem={problem} handleInput={(e)=>this.handleInput(e)} problemRequired={problemRequired} />}
+         </div>
+          }
             <div>
             <br/>
-              <Button raised color="primary" type="submit" onClick={() =>{handleSubmit({ name, desc, path, text, type })}} >Submit</Button>
+              <Button raised color="primary" type="submit" onClick={() =>{handleSubmit({ name, desc, path, problem ,text, type })}} >Submit</Button>
               <Button className="cancelBtn" 
               raised color="default" onClick={()=>handleClose()}>Cancel</Button>
             </div>

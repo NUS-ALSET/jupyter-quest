@@ -42,4 +42,10 @@ class JuptyerRenderer extends Component {
   }
 }
 
+JuptyerRenderer.propTypes={
+  notebook:PropTypes.object.isRequired,
+  defaultStyle:PropTypes.bool.isRequired,
+  showCode:PropTypes.bool.isRequired
+}
+
 export default JuptyerRenderer

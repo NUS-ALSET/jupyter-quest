@@ -5,17 +5,17 @@ import { connect } from 'react-redux'
 import { firebaseConnect } from 'react-redux-firebase'
 import Jupyter from './components'
 
-const Notebook =({pathId,notebookProblems})=>{
+const Notebook =({assignment,notebookProblem})=>{
 return(
   <div>
-      {notebookProblems && notebookProblems.map((problems,index)=>{
-        return <Jupyter key={index}
-        notebook={problems.value.file}
+      {notebookProblem && 
+       <Jupyter
+        notebook={notebookProblem.file}
         showCode={true}
         defaultStyle={true}
         loadMathjax={true} 
       />
-      })}
+      }
       
   </div>
 )}
@@ -23,13 +23,18 @@ return(
 export default compose(
   firebaseConnect( (props, store) => [
       {
-        path: `problems/${props.pathId}`,
-        storeAs:'notebookProblems'
+        path: `problems/${props.assignment.value.path}/${props.assignment.value.problem}`,
+        storeAs:'notebookProblem'
       },
     ]),
   connect(({ firebase }, props) => ({ 
-    notebookProblems: firebase.ordered.notebookProblems
+    notebookProblem: firebase.data.notebookProblem
   }))
 )(Notebook)
+
+Notebook.propTypes={
+  assignment:PropTypes.object.isRequired,
+  notebookProblem:PropTypes.object
+}
 
 

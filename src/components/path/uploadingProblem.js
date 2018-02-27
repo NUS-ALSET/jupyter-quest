@@ -5,10 +5,6 @@ import { withStyles } from 'material-ui/styles';
 import Typography from 'material-ui/Typography';
 import Modal from 'material-ui/Modal';
 import Button from 'material-ui/Button';
-import { Link } from 'react-router-dom';
-import AddIcon from 'material-ui-icons/Add';
-import List, { ListItem, ListItemIcon, ListItemText } from 'material-ui/List'
-import StarIcon from 'material-ui-icons/Star'
 import TextField from 'material-ui/TextField/TextField';
 import readJson from '../../helpers/readJson.js';
 import { FormHelperText } from 'material-ui/Form';
@@ -53,17 +49,26 @@ class UploadsQuestions extends React.Component {
   constructor(props){
     super(props)
     this.state = { 
-      uploadedProblem:null    
+      uploadedProblem:null,
+      fileName : null,
     };
   }
   fileHandle = (e) => {
-    readJson(e.target.files[0], (data) => {
-      this.setState({"uploadedProblem":data});
-    })
+    const file = e.target.files[0];
+    if(file) {
+      this.setState({fileName : file.name});
+      readJson(e.target.files[0], (data) => {
+        this.setState({"uploadedProblem":data});
+      })
+    } 
+  }
+  handleClose = () => {
+    this.setState({fileName:null});
+    this.props.handleCloseFile();
   }
 
   render() {
-    const {uploadedProblem} = this.state;
+    const { uploadedProblem, fileName } = this.state;
     const { classes, openFile, handleCloseFile, name, handleInput, handleSubmitFile, problemRequired } = this.props;
     return (
       <div>
@@ -71,7 +76,7 @@ class UploadsQuestions extends React.Component {
           aria-labelledby="simple-modal-title"
           aria-describedby="simple-modal-description"
           open={openFile}
-          onClose={()=>handleCloseFile()}
+          onClose={()=>this.handleClose()}
         >
           <div style={getModalStyle()} className={classes.paper}>
             <Typography type="title" id="modal-title">
@@ -96,14 +101,16 @@ class UploadsQuestions extends React.Component {
               onChange={this.fileHandle}
             />
              {problemRequired && <FormHelperText className="error-text">Name & file Required</FormHelperText>}
-            <br />
+             <div>
+              {fileName}
+            </div>
             <label style={{marginRight:'10px'}} htmlFor="raised-button-file">
               <Button raised component="span" color="default" className={classes.button}> Upload File </Button>
             </label>
             <Button className="cancelBtn" 
               raised color="primary" onClick={ () => {handleSubmitFile({name, uploadedProblem}) }}>Submit</Button>
               <Button className="cancelBtn" 
-              raised color="default" onClick={()=> handleCloseFile() }>Cancel</Button>
+              raised color="default" onClick={()=> this.handleClose() }>Cancel</Button>
             </Typography>
           </div>
         </Modal>

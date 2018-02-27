@@ -167,8 +167,8 @@ class PublicCourse extends React.Component {
   isSelected = id => this.state.selected.indexOf(id) !== -1;
 
   render() {
-    const { classes, data, columnData, joinPwdLoading,auth, joinedCourses} = this.props;
-    const { order, orderBy, selected, rowsPerPage, page, password, vertical,openNotification, horizontal, message, isTrue } = this.state;
+    const { classes, data, columnData, joinedCourses} = this.props;
+    const { order, orderBy, selected, rowsPerPage, page, password,openNotification, message } = this.state;
     const emptyRows = data ? rowsPerPage - Math.min(rowsPerPage, data.length - page * rowsPerPage) :'';
     return (
       <div>

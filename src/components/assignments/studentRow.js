@@ -9,25 +9,21 @@ import Checkbox from 'material-ui/Checkbox';
 
 
 class StudentRow extends React.Component {
-  constructor(props, context) {
-    super(props, context);
-  }
-
 
   render() {
-    const {userId, isMe, displayName, handleNotification, openNotebook}=this.props;
-    const { assignMentList }=this.props;
+    const { userId, isMe, displayName, handleNotification, openNotebook } = this.props;
+    const { assignMentList =[] } = this.props;
     const isSelected = false; 
 
     return (
-        
+
             <TableRow
                 hover
                 role="checkbox"
                 aria-checked={isSelected}
                 tabIndex={-1}
                selected={isSelected}
-                    key={this.props.userId}                
+                    key={userId}                
                     >
                     <TableCell padding="checkbox">
                         <Checkbox checked={isSelected}/>
