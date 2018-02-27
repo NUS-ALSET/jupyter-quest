@@ -17,6 +17,7 @@ import EnhancedTableHead from '../table/enhancedTableHead';
 import EnhancedTableToolbar from '../table/enhancedTableToolbar';
 import Notification from '../notification'
 import StudentRow from "./studentRow"
+import AsignmentDialog from "./assignmentDialog"
 
 
 const styles = theme => ({
@@ -52,9 +53,20 @@ class AssignmentLists extends React.Component {
       checkedA: true,
       open: false,
       message:null,
+      openDialog : false,
+      content :{__html :''} 
     };
   }
-
+  handleDilogBox=(text)=>{
+	  const exp = /(\b(https?|http|ftp|file):\/\/[-A-Z0-9+&@#\/%?=~_|!:,.;]*[-A-Z0-9+&@#\/%=~_|])/ig;
+	  const text1=text.replace(exp, "<a target='_blank' href='$1'>$1</a>");
+	  const exp2 =/(^|[^\/])(www\.[\S]+(\b|$))/gim;
+    const dialogText=text1.replace(exp2, '$1<a target="_blank" href="http://$2">$2</a>');
+    this.setState({content : {__html : dialogText},openDialog:true});
+  }
+  closeDialogBox=()=>{
+    this.setState({openDialog:false,content : {__html : ''}});
+  }
   handleRequestSort = (event, property) => {
     const orderBy = property;
     let order = 'desc';
@@ -137,11 +149,12 @@ class AssignmentLists extends React.Component {
   render() {
     const { classes, columnData, showTable, auth ,assignments,openNotebook} = this.props;
     let {studentList}=this.props;
-    const { order, orderBy, selected, rowsPerPage, page, open, message } = this.state;
+    const { order, orderBy, selected, rowsPerPage, page, open, message,content,openDialog } = this.state;
     const emptyRows = studentList ? rowsPerPage - Math.min(rowsPerPage, studentList.length - page * rowsPerPage):'';
     studentList = studentList ?studentList : []; 
     return (
         <div>
+      <AsignmentDialog open={openDialog} content={content} closeDialogBox={this.closeDialogBox}/>
       <Notification message={message} open={open} handleClose={this.closeNotification}/>
       {showTable  && <Paper className={classes.root}>
          <div><EnhancedTableToolbar title='Assignments'  numSelected={selected.length} deleteOpr={this.deleteData} />
@@ -155,6 +168,7 @@ class AssignmentLists extends React.Component {
                 onSelectAllClick={this.handleSelectAllClick}
                 onRequestSort={this.handleRequestSort}
                 rowCount={studentList.length}
+                handleDilogBox={this.handleDilogBox}
                 />
                 <TableBody>
                   

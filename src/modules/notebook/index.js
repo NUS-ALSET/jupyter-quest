@@ -6,15 +6,21 @@ import { firebaseConnect } from 'react-redux-firebase'
 import Jupyter from './components'
 
 const Notebook =({assignment,notebookProblem})=>{
+const  jsonParseData=notebookProblem ? JSON.parse(notebookProblem.file) : null;
+
 return(
   <div>
-      {notebookProblem && 
+      {jsonParseData && 
+       <div>
+       <h1>Problem : {notebookProblem.problem}</h1>
+       <hr/>
        <Jupyter
-        notebook={notebookProblem.file}
+        notebook={jsonParseData}
         showCode={true}
         defaultStyle={true}
         loadMathjax={true} 
       />
+      </div>
       }
       
   </div>

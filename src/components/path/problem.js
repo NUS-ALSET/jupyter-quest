@@ -6,13 +6,13 @@ import { connect } from 'react-redux';
 import { compose } from 'redux';
 
 const ProblemComponent = (props) => {
-    const {active, problems, pathId} = props;
+    const {active, problems, pathId,selectProblem} = props;
     let AllProblems = problems ? problems[pathId] : null;
     return (
     <Collapse in={active} timeout="auto" unmountOnExit>
      {AllProblems && AllProblems.map( problem =>   <List key={problem.key} component="div" disablePadding>
         <ListItem button>
-        <ListItemText inset primary={problem.value.problem} />
+        <ListItemText inset primary={problem.value.problem} onClick={()=>selectProblem(problem.value)} />
         </ListItem>
     </List>
     )} 

@@ -177,8 +177,8 @@ class CourseDetails extends React.Component {
   render() {
     const { classes, assignment, auth, match, student,isInstructor, assignmentPath } = this.props;
     // get the array of assignments
-    let assignments = assignment ? assignment[match.params.id] : [];
-    const visibleAssignments=assignments.filter(assignment=>assignment.value.assignmentVisibility);
+    let assignments = assignment ? assignment : [];
+    const visibleAssignments=assignments.filter(assignments=>assignments.value.assignmentVisibility);
     const { open, message, showTable,nameRequired,descRequired,textRequired,pathRequired,problemRequired,selectedAssignment } = this.state;
      if(visibleAssignments){
       columnDataForAssignmentLists=[{ id: 0, numeric: false, disablePadding: true, label: 'Student Name'}]
@@ -188,7 +188,8 @@ class CourseDetails extends React.Component {
        columnDataForAssignmentLists.push(data);
        return null;
     } )
-   }  
+   }
+  
     let activeTab = <h2>No Data</h2>;
     switch (this.state.value) {
       case 0 : {
@@ -198,7 +199,7 @@ class CourseDetails extends React.Component {
         break;
       }
       case 1: {
-        activeTab =<div>{selectedAssignment.value.path && selectedAssignment.value.problem && <Notebook assignment={selectedAssignment} />} </div>
+        activeTab =<div style={{marginLeft : "90px",marginTop:"50px"}}>{selectedAssignment.value.path && selectedAssignment.value.problem && <Notebook assignment={selectedAssignment} />} </div>
         break;
       }
       case 2 : {
@@ -266,7 +267,8 @@ const AssignmentWithFirebase = compose(
  return [
       {
         path: `assignments/${props.match.params.id}/`,
-        queryParams:  props.assignmentQueryParams
+        queryParams:  props.assignmentQueryParams,
+        storeAs:'assignments'
       },
       {
         path:`courseMembers/${props.match.params.id}/`,
@@ -289,7 +291,7 @@ const AssignmentWithFirebase = compose(
 
 CourseDetails.propTypes = {
   classes: PropTypes.object.isRequired,
-  assignment: PropTypes.object,
+  assignment: PropTypes.array,
   auth: PropTypes.object.isRequired,
   match: PropTypes.object.isRequired,
   firebase: PropTypes.object.isRequired,
