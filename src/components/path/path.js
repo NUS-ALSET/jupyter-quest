@@ -13,10 +13,11 @@ import Paper from 'material-ui/Paper';
 import withStyles from 'material-ui/styles/withStyles';
 import ExpandLess from 'material-ui-icons/ExpandLess';
 import ExpandMore from 'material-ui-icons/ExpandMore';
-import CreatePath from './createPath';
 
 // components
 import {Problem} from './'
+import CreatePath from './createPath';
+import Jupyter from '../../modules/notebook/components'
 
 const styles = theme => ({
   root: {
@@ -35,7 +36,8 @@ class Path extends Component {
       spacing: '16',
       open: -1,
       selected: null,
-      createPath: false
+      createPath: false,
+      selectedProblem : null
     }
   }
 
@@ -57,6 +59,9 @@ class Path extends Component {
   enableCreatePath=()=>{
     this.setState({createPath:true})
   }
+  handleSelectProblem=(problem,title)=>{
+    this.setState({selectedProblem:{...problem,pathTitle:title}});
+  }
   createPath(){
   }
   submitPath=(path)=>{
@@ -77,15 +82,14 @@ cancelPath=()=>{
 }
 
   render() {
-    const {isActive, spacing, open, selected} = this.state
+    const {isActive, spacing, open, selected,selectedProblem} = this.state
     const {path, classes, firebase} = this.props;
-
     let comp = null;
     if(this.state.createPath){
       comp = <Grid container className={classes.demo} justify="flex-start" spacing={Number(spacing)}>
       <CreatePath submitPath={this.submitPath} cancelPath={this.cancelPath}  /></Grid>
     
-    } else{
+    } else{ 
       comp =
         <div>
         <Grid container className={classes.demo} justify="flex-start" spacing={Number(spacing)}>
@@ -100,7 +104,7 @@ cancelPath=()=>{
            
          </ListItem>
          
-         {selected === pathItem.key &&  <Problem pathId={pathItem.key}  active={open === index}  /> }
+         {selected === pathItem.key &&  <Problem pathId={pathItem.key} selectProblem={(problem)=>this.handleSelectProblem(problem,pathItem.value.title)} active={open === index}  /> }
           
          </div>
        ) : <h5>No Data</h5>}
@@ -115,7 +119,8 @@ cancelPath=()=>{
           firebase={firebase}
         />
         </Grid>
-        <Button style={{marginLeft:'5px', marginTop:'15px'}} raised color="primary" onClick={this.createQuestion}>Add Question</Button>
+        <Button style={{marginLeft:'5px', marginTop:'15px'}} raised color="primary" onClick={this.createQuestion}>Add Question
+        </Button>
         </div>
       
     }
@@ -124,9 +129,25 @@ cancelPath=()=>{
     return (
       <div>
         <AppFrame>
+          <div style={{width:'30%', display:'inline-block'}}>
         <Grid item xs={12}>
         {comp}
         </Grid>
+        </div>
+        <div style={{width:'70%',float:'right', display:'inline-block', verticalAlign:'top'}}>
+         {selectedProblem && selectedProblem.file &&
+         <div>
+        <h1>{selectedProblem.pathTitle}/{selectedProblem.problem}</h1>
+        <hr/>
+        <Jupyter
+        notebook={JSON.parse(selectedProblem.file)}
+        showCode={true}
+        defaultStyle={true}
+        loadMathjax={true} 
+        />
+        </div>
+        } 
+        </div>
         </AppFrame>
       </div>
     )

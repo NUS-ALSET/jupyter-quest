@@ -76,7 +76,7 @@ this.setState({[e.target.name]:e.target.value})
 }
 submitProblem=(formData)=>{
   if(formData.name && formData.uploadedProblem){
-  let problemData = {problem:formData.name, file:formData.uploadedProblem}
+  let problemData = {problem:formData.name, file:JSON.stringify(formData.uploadedProblem)}
   this.props.firebase.push(`/problems/${this.state.pathId}/`, problemData)
   .then( data => {
     // wait for db to send response\

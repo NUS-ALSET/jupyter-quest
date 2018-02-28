@@ -26,7 +26,7 @@ class EnhancedTableHead extends React.Component {
     };
   
     render() {
-      const { onSelectAllClick, order, orderBy, numSelected, rowCount, columnData, isCheckbox } = this.props;
+      const { onSelectAllClick, order, orderBy, numSelected, rowCount, columnData, isCheckbox, handleDilogBox } = this.props;
     
       return (
         <TableHead>
@@ -59,7 +59,7 @@ class EnhancedTableHead extends React.Component {
                   <p>{column.label}</p>
                   <p >
                   {
-                    column.detailsLink && (<a className={"nextline"} target="_blank" href={column.detailsLink}>Details</a>)
+                    column.detailsLink && (<a className={"nextline"} href="javascript:void(0)"  onClick={()=>handleDilogBox(column.detailsLink)}>Details</a>)
                   }
                   </p>                 
                   </TableSortLabel>
